@@ -1,56 +1,44 @@
 /* ========================================================
-   우리 반 1인 1역할 배정 도우미 - style.css
-   디자인 콘셉트: 초등학생 눈높이에 맞춘 귀엽고 산뜻한 파스텔톤
+   NAVER 홈페이지 스타일 학급 1인 1역할 배정 도우미 - style.css
+   디자인 아이덴티티: NAVER 포털 고유의 시그니처 그린(#03C75A)과
+   정돈된 2열 그리드(뉴스스탠드/로그인박스/위젯) 레이아웃
    ======================================================== */
 
 :root {
-  /* Cute Pastel Palette */
-  --bg-main: #FBF9F5;
-  --bg-card: #FFFFFF;
-  --text-main: #2D3748;
-  --text-muted: #718096;
-  --text-dark: #1A202C;
+  /* NAVER Signature Brand Colors */
+  --naver-green: #03C75A;
+  --naver-green-hover: #02b350;
+  --naver-green-dark: #009f45;
+  --naver-green-light: #F4FBF7;
+  --naver-green-border: #BCE7D0;
+  
+  /* Naver Portal Neutrals */
+  --naver-bg: #F5F6F7;
+  --naver-box-bg: #FFFFFF;
+  --naver-border: #E4E8EB;
+  --naver-border-subtle: #ECEEF0;
+  --naver-border-focus: #03C75A;
 
-  /* Accent Colors */
-  --color-primary: #FF7043;      /* Warm tangerine */
-  --color-primary-hover: #F4511E;
-  --color-primary-light: #FBE9E7;
-  --color-secondary: #42A5F5;    /* Sky blue */
-  --color-secondary-hover: #1E88E5;
-  --color-accent: #66BB6A;       /* Fresh mint */
-  --color-accent-hover: #43A047;
-  --color-warning: #FFA726;
-  --color-danger: #EF5350;
+  /* Naver Typography Grays */
+  --naver-text-primary: #101010;
+  --naver-text-body: #333333;
+  --naver-text-muted: #666666;
+  --naver-text-subtle: #8E8E8E;
+  --naver-link-blue: #0066CC;
+  --naver-tag-red: #F4361E;
 
-  /* Card Pastel Accents */
-  --pastel-mint: #E8F5E9;
-  --pastel-mint-border: #C8E6C9;
-  --pastel-blue: #E1F5FE;
-  --pastel-blue-border: #B3E5FC;
-  --pastel-peach: #FFF3E0;
-  --pastel-peach-border: #FFE0B2;
-  --pastel-purple: #F3E5F5;
-  --pastel-purple-border: #E1BEE7;
-  --pastel-yellow: #FFF9C4;
-  --pastel-yellow-border: #FFF59D;
-  --pastel-pink: #FCE4EC;
-  --pastel-pink-border: #F8BBD0;
+  /* Layout Geometry */
+  --naver-max-width: 1280px;
+  --radius-xs: 3px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
 
-  /* Border & Radii */
-  --radius-sm: 8px;
-  --radius-md: 14px;
-  --radius-lg: 20px;
-  --radius-xl: 28px;
-  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.08);
-
-  /* Fonts */
-  --font-heading: 'Jua', 'Noto Sans KR', sans-serif;
-  --font-body: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
+  /* Font Stack */
+  --font-naver: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", "맑은 고딕", "Noto Sans KR", sans-serif;
 }
 
-/* Reset & Base */
+/* Reset & Box Sizing */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -58,580 +46,1063 @@
 }
 
 body {
-  font-family: var(--font-body);
-  background-color: var(--bg-main);
-  color: var(--text-main);
+  font-family: var(--font-naver);
+  background-color: var(--naver-bg);
+  color: var(--naver-text-body);
+  font-size: 13px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
-  background-image: 
-    radial-gradient(#E2D9CC 0.75px, transparent 0.75px),
-    radial-gradient(#E2D9CC 0.75px, #FBF9F5 0.75px);
-  background-size: 30px 30px;
-  background-position: 0 0, 15px 15px;
   min-height: 100vh;
 }
 
-.app-wrapper {
+.naver-layout {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
 }
 
-/* ========================================================
-   Header Navigation
-   ======================================================== */
-.app-header {
-  background: #FFFFFF;
-  border-bottom: 2px dashed #E2D9CC;
-  padding: 12px 24px;
-  position: sticky;
-  top: 0;
-  z-index: 40;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-}
-
-.header-inner {
-  max-width: 1360px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 16px;
-}
-
-.brand-group {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.brand-mascot {
-  font-size: 2.2rem;
-  background: #FFF3E0;
-  width: 52px;
-  height: 52px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius-lg);
-  border: 2px solid #FFE0B2;
-  box-shadow: var(--shadow-sm);
-}
-
-.brand-title {
-  font-family: var(--font-heading);
-  font-size: 1.45rem;
-  color: #D84315;
-  letter-spacing: -0.5px;
-}
-
-.brand-subtitle {
-  font-size: 0.82rem;
-  color: var(--text-muted);
-}
-
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-/* ========================================================
-   Buttons
-   ======================================================== */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 8px 16px;
-  font-family: var(--font-body);
-  font-size: 0.9rem;
-  font-weight: 600;
-  border-radius: var(--radius-md);
-  border: none;
-  cursor: pointer;
-  transition: all 0.18s ease-in-out;
+a {
   text-decoration: none;
-  white-space: nowrap;
+  color: inherit;
 }
 
-.btn:active {
-  transform: scale(0.97);
-}
-
-.btn-icon {
-  font-size: 1.1em;
-}
-
-.btn-primary {
-  background: linear-gradient(135deg, #FF8A65 0%, #FF7043 100%);
-  color: #FFFFFF;
-  box-shadow: 0 4px 10px rgba(255, 112, 67, 0.35);
-  font-size: 1.05rem;
-  padding: 10px 22px;
-}
-.btn-primary:hover {
-  background: linear-gradient(135deg, #FF7043 0%, #F4511E 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 14px rgba(244, 81, 30, 0.4);
-}
-
-.btn-bounce {
-  animation: gentle-pulse 3s infinite;
-}
-
-@keyframes gentle-pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.025); }
-}
-
-.btn-secondary {
-  background: #E3F2FD;
-  color: #1976D2;
-  border: 1px solid #BBDEFB;
-}
-.btn-secondary:hover {
-  background: #BBDEFB;
-  color: #0D47A1;
-}
-
-.btn-accent {
-  background: #E8F5E9;
-  color: #2E7D32;
-  border: 1px solid #C8E6C9;
-}
-.btn-accent:hover {
-  background: #C8E6C9;
-  color: #1B5E20;
-}
-
-.btn-outline {
-  background: #FFFFFF;
-  color: #4A5568;
-  border: 1.5px solid #E2E8F0;
-}
-.btn-outline:hover {
-  background: #F8FAFC;
-  border-color: #CBD5E0;
-  color: #2D3748;
-}
-
-.btn-subtle {
-  background: #FFF8E1;
-  color: #F57F17;
-  border: 1px solid #FFE082;
-}
-.btn-subtle:hover {
-  background: #FFE082;
-}
-
-.btn-ghost {
-  background: transparent;
-  color: var(--text-muted);
-}
-.btn-ghost:hover {
-  background: #EDF2F7;
-  color: var(--text-main);
-}
-
-.btn-mini {
-  padding: 4px 10px;
-  font-size: 0.78rem;
-  border-radius: var(--radius-sm);
-  background: #F1F5F9;
-  color: #475569;
-  border: 1px solid #E2E8F0;
-}
-.btn-mini:hover {
-  background: #E2E8F0;
-}
-
-.btn-danger-text {
-  color: #E53935;
-}
-.btn-danger-text:hover {
-  background: #FFEBEE;
+button {
+  font-family: inherit;
 }
 
 /* ========================================================
-   Main Content Layout
+   1. NAVER Top Quick Bar
    ======================================================== */
-.main-content {
-  flex: 1;
-  max-width: 1360px;
-  width: 100%;
-  margin: 0 auto;
-  padding: 24px;
+.naver-top-bar {
+  background: #FFFFFF;
+  border-bottom: 1px solid var(--naver-border);
+  height: 38px;
+  font-size: 12px;
 }
 
-/* Classroom Bar */
-.classroom-bar {
-  background: #FFFFFF;
-  border-radius: var(--radius-xl);
-  padding: 20px 28px;
-  margin-bottom: 20px;
-  box-shadow: var(--shadow-sm);
-  border: 2px solid #FFF3E0;
+.top-bar-inner {
+  max-width: var(--naver-max-width);
+  margin: 0 auto;
+  padding: 0 20px;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 20px;
 }
 
-.class-title-row {
+.top-left-links {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 8px;
-  flex-wrap: wrap;
+  color: var(--naver-text-muted);
 }
 
-.editable-class-name {
-  font-family: var(--font-heading);
-  font-size: 1.5rem;
-  color: #2E7D32;
-  border: 1.5px dashed transparent;
-  border-radius: var(--radius-sm);
-  padding: 4px 8px;
-  background: #F1F8E9;
-  width: 320px;
-  max-width: 100%;
-  outline: none;
-  transition: all 0.2s;
+.naver-service-label {
+  font-weight: 700;
+  color: var(--naver-green);
 }
 
-.editable-class-name:focus, .editable-class-name:hover {
-  border-color: #81C784;
-  background: #FFFFFF;
-  box-shadow: 0 0 0 3px rgba(129, 199, 132, 0.2);
+.bar-divider {
+  color: #D1D5DB;
+  font-size: 11px;
 }
 
-.editable-period-name {
-  font-size: 0.95rem;
-  color: #607D8B;
-  border: 1.5px dashed transparent;
-  border-radius: var(--radius-sm);
-  padding: 4px 8px;
-  background: #ECEFF1;
-  width: 180px;
-  outline: none;
-  transition: all 0.2s;
+.top-link {
+  transition: color 0.15s;
 }
 
-.editable-period-name:focus, .editable-period-name:hover {
-  border-color: #90A4AE;
-  background: #FFFFFF;
+.top-link:hover, .top-link.active {
+  color: var(--naver-text-primary);
+  font-weight: 600;
 }
 
-.class-stats-row {
+.top-right-links {
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: 0.88rem;
-  color: var(--text-muted);
+  gap: 12px;
 }
 
-.stat-pill {
+.top-user-info {
+  color: var(--naver-text-muted);
+}
+
+.top-setting-btn {
+  background: #F8F9FA;
+  border: 1px solid var(--naver-border);
+  border-radius: var(--radius-xs);
+  padding: 3px 8px;
+  font-size: 11px;
+  color: var(--naver-text-body);
+  cursor: pointer;
   display: inline-flex;
   align-items: center;
   gap: 4px;
 }
 
-.stat-pill strong {
-  color: var(--text-dark);
-}
-
-.stat-separator {
-  color: #CBD5E0;
-}
-
-.control-actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-/* Filter & View Bar */
-.filter-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20px;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-
-.search-box {
-  display: flex;
-  align-items: center;
-  background: #FFFFFF;
-  border: 1.5px solid #E2E8F0;
-  border-radius: var(--radius-lg);
-  padding: 6px 14px;
-  gap: 8px;
-  min-width: 260px;
-  box-shadow: var(--shadow-sm);
-}
-
-.search-box input {
-  border: none;
-  outline: none;
-  font-size: 0.9rem;
-  width: 100%;
-  background: transparent;
-  color: var(--text-main);
-}
-
-.filter-tags {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.filter-label {
-  font-size: 0.85rem;
-  color: var(--text-muted);
-}
-
-.view-btn {
-  background: #FFFFFF;
-  border: 1px solid #CBD5E1;
-  padding: 6px 12px;
-  font-size: 0.82rem;
-  font-weight: 600;
-  border-radius: var(--radius-md);
-  color: var(--text-muted);
-  cursor: pointer;
-  transition: all 0.15s;
-}
-
-.view-btn.active {
-  background: #334155;
-  color: #FFFFFF;
-  border-color: #334155;
+.top-setting-btn:hover {
+  background: #ECEFF1;
 }
 
 /* ========================================================
-   Pastel Cards Grid
+   2. Iconic NAVER Header & Green Search Section
    ======================================================== */
-.cards-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+.naver-header-search {
+  background: #FFFFFF;
+  padding: 24px 20px 20px;
+}
+
+.search-section-inner {
+  max-width: var(--naver-max-width);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+/* Naver Brand Logo */
+.naver-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.naver-logo-box {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.naver-logo-n {
+  background: var(--naver-green);
+  color: #FFFFFF;
+  font-weight: 900;
+  font-size: 24px;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  letter-spacing: -1px;
+}
+
+.naver-logo-text {
+  font-size: 26px;
+  font-weight: 900;
+  color: var(--naver-green);
+  letter-spacing: -1.2px;
+  margin-left: 3px;
+}
+
+.naver-subbrand {
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--naver-border);
+  padding-left: 10px;
+}
+
+.subbrand-badge {
+  font-size: 10px;
+  font-weight: 800;
+  background: #E8F8F0;
+  color: var(--naver-green);
+  padding: 1px 4px;
+  border-radius: 2px;
+  display: inline-block;
+  width: fit-content;
+  line-height: 1.2;
+}
+
+.subbrand-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--naver-text-primary);
+  letter-spacing: -0.5px;
+}
+
+/* Iconic Naver Green Search Window */
+.naver-search-window {
+  flex: 1;
+  max-width: 580px;
+  height: 52px;
+  border: 2px solid var(--naver-green);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  background: #FFFFFF;
+  position: relative;
+  transition: box-shadow 0.2s;
+}
+
+.naver-search-window:focus-within {
+  box-shadow: 0 2px 10px rgba(3, 199, 90, 0.2);
+}
+
+.search-input-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  height: 100%;
+}
+
+.naver-search-input {
+  width: 100%;
+  border: none;
+  outline: none;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--naver-text-primary);
+  background: transparent;
+}
+
+.naver-search-input::placeholder {
+  font-weight: 400;
+  color: var(--naver-text-subtle);
+  font-size: 13.5px;
+}
+
+.search-clear-btn {
+  background: transparent;
+  border: none;
+  color: var(--naver-text-subtle);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px;
+  display: none;
+}
+
+.search-clear-btn:hover {
+  color: var(--naver-text-primary);
+}
+
+.naver-search-submit {
+  width: 54px;
+  height: 100%;
+  background: var(--naver-green);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+
+.naver-search-submit:hover {
+  background: var(--naver-green-hover);
+}
+
+/* Realtime Keywords Ticker */
+.naver-realtime-keywords {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #F8F9FA;
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--naver-border-subtle);
+  font-size: 12px;
+}
+
+.rt-label {
+  font-weight: 700;
+  color: var(--naver-text-muted);
+}
+
+.rt-keyword-list {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.rt-item {
+  color: var(--naver-text-body);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.rt-num {
+  color: var(--naver-green);
+  font-weight: 800;
+}
+
+.rt-up {
+  color: #F4361E;
+  font-size: 9px;
+  font-weight: 900;
+}
+
+.rt-same {
+  color: #9E9E9E;
+  font-weight: 900;
+}
+
+@media (max-width: 1024px) {
+  .naver-realtime-keywords {
+    display: none;
+  }
+}
+
+/* ========================================================
+   3. NAVER GNB Bar
+   ======================================================== */
+.naver-gnb {
+  background: #FFFFFF;
+  border-top: 1px solid var(--naver-border-subtle);
+  border-bottom: 1px solid var(--naver-border);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.gnb-inner {
+  max-width: var(--naver-max-width);
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.gnb-menu {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  gap: 4px;
+  overflow-x: auto;
+  padding: 4px 0;
+}
+
+.gnb-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--naver-text-body);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+
+.gnb-item:hover {
+  background: #F4FBF7;
+  color: var(--naver-green-dark);
+  border-color: var(--naver-green-border);
+}
+
+.gnb-item.gnb-primary {
+  background: var(--naver-green);
+  color: #FFFFFF;
+  font-weight: 700;
+}
+
+.gnb-item.gnb-primary:hover {
+  background: var(--naver-green-hover);
+  border-color: var(--naver-green-hover);
+}
+
+.gnb-item.gnb-accent {
+  background: #F0F9FF;
+  color: #0284C7;
+  border-color: #BAE6FD;
+}
+.gnb-item.gnb-accent:hover {
+  background: #E0F2FE;
+}
+
+.gnb-item.gnb-ghost {
+  color: var(--naver-text-subtle);
+}
+
+.gnb-icon {
+  font-size: 15px;
+}
+
+/* ========================================================
+   4. NAVER 2-Column Portal Main Container
+   ======================================================== */
+.naver-main-container {
+  max-width: var(--naver-max-width);
+  width: 100%;
+  margin: 18px auto;
+  padding: 0 20px;
+  flex: 1;
+}
+
+.naver-columns-wrap {
+  display: flex;
+  align-items: flex-start;
   gap: 20px;
 }
 
-.role-card {
+.naver-main-col {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.naver-side-col {
+  width: 350px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+@media (max-width: 900px) {
+  .naver-columns-wrap {
+    flex-direction: column;
+  }
+  .naver-side-col {
+    width: 100%;
+  }
+}
+
+/* Generic Naver Box (Clean White, 1px Crisp Border) */
+.naver-box {
+  background: var(--naver-box-bg);
+  border: 1px solid var(--naver-border);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+/* Class Title Bar */
+.class-title-box {
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.class-title-left {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.class-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.naver-green-badge {
+  background: #E8F8F0;
+  color: var(--naver-green-dark);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 2px;
+  border: 1px solid var(--naver-green-border);
+}
+
+.naver-input-subtle {
+  border: 1px solid transparent;
+  background: #F8F9FA;
+  padding: 2px 8px;
+  font-size: 12px;
+  color: var(--naver-text-muted);
+  border-radius: 3px;
+  outline: none;
+}
+.naver-input-subtle:focus, .naver-input-subtle:hover {
+  border-color: #CBD5E1;
   background: #FFFFFF;
-  border-radius: var(--radius-xl);
-  padding: 20px;
-  border: 2px solid #F1EFEA;
-  box-shadow: var(--shadow-sm);
+}
+
+.naver-class-title-input {
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--naver-text-primary);
+  border: 1px solid transparent;
+  border-radius: 4px;
+  padding: 2px 6px;
+  outline: none;
+  letter-spacing: -0.5px;
+}
+.naver-class-title-input:focus, .naver-class-title-input:hover {
+  border-color: var(--naver-green);
+  background: #F4FBF7;
+}
+
+.status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--naver-green-dark);
+  background: #F4FBF7;
+  padding: 4px 10px;
+  border-radius: 12px;
+  border: 1px solid var(--naver-green-border);
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--naver-green);
+  display: inline-block;
+}
+
+/* ========================================================
+   Naver Newsstand Style: Role Stand Section
+   ======================================================== */
+.role-stand-box {
+  padding: 0;
+  overflow: hidden;
+}
+
+.stand-header {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--naver-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #FFFFFF;
+}
+
+.stand-header-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.naver-square-dot {
+  width: 5px;
+  height: 5px;
+  background: var(--naver-green);
+  display: inline-block;
+}
+
+.stand-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--naver-text-primary);
+  letter-spacing: -0.3px;
+}
+
+.stand-count-tag {
+  font-size: 12px;
+  color: var(--naver-text-muted);
+}
+.stand-count-tag strong {
+  color: var(--naver-green-dark);
+}
+
+.stand-view-toggle {
+  display: flex;
+  border: 1px solid var(--naver-border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.view-toggle-btn {
+  background: #FFFFFF;
+  border: none;
+  padding: 5px 10px;
+  font-size: 12px;
+  color: var(--naver-text-muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.view-toggle-btn.active {
+  background: #F5F6F7;
+  color: var(--naver-text-primary);
+  font-weight: 700;
+}
+
+.stand-quick-guide {
+  background: #FAFBFB;
+  border-bottom: 1px solid var(--naver-border-subtle);
+  padding: 8px 18px;
+  font-size: 12px;
+  color: var(--naver-text-muted);
+}
+
+.role-grid-section {
+  padding: 16px;
+}
+
+/* Naver Style Card Grid (Clean White Boxes, Hover Green Border) */
+.naver-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.naver-role-card {
+  background: #FFFFFF;
+  border: 1px solid var(--naver-border);
+  border-radius: var(--radius-sm);
+  padding: 14px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   position: relative;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  overflow: hidden;
+  transition: all 0.18s ease-in-out;
 }
 
-.role-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-md);
+.naver-role-card:hover {
+  border-color: var(--naver-green);
+  box-shadow: 0 4px 12px rgba(3, 199, 90, 0.12);
+  transform: translateY(-2px);
 }
 
-/* Pastel Theme variants for cards based on index */
-.role-card.theme-0 { background: #FAFDF7; border-color: #C8E6C9; }
-.role-card.theme-1 { background: #F7FCFF; border-color: #B3E5FC; }
-.role-card.theme-2 { background: #FFFBF5; border-color: #FFE0B2; }
-.role-card.theme-3 { background: #FDF7FD; border-color: #E1BEE7; }
-.role-card.theme-4 { background: #FFFDF2; border-color: #FFF59D; }
-.role-card.theme-5 { background: #FDF7F9; border-color: #F8BBD0; }
-.role-card.theme-6 { background: #F4FBFB; border-color: #B2DFDB; }
-.role-card.theme-7 { background: #F8F7FD; border-color: #D1C4E9; }
-
-.card-top {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.card-emoji-box {
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radius-md);
-  background: #FFFFFF;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.8rem;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-  flex-shrink: 0;
-  border: 1.5px solid rgba(0,0,0,0.05);
-}
-
-.card-header-info {
-  flex: 1;
-}
-
-.card-no-badge {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--text-muted);
-  display: inline-block;
-  margin-bottom: 2px;
-}
-
-.card-role-title {
-  font-family: var(--font-heading);
-  font-size: 1.22rem;
-  color: var(--text-dark);
-  line-height: 1.25;
-}
-
-.card-duty-text {
-  font-size: 0.88rem;
-  color: #4A5568;
-  margin-bottom: 16px;
-  line-height: 1.45;
-  min-height: 40px;
-  background: rgba(255, 255, 255, 0.7);
-  padding: 8px 12px;
-  border-radius: var(--radius-sm);
-  border: 1px solid rgba(0, 0, 0, 0.04);
-}
-
-/* Assigned Student Box */
-.card-student-box {
-  background: #FFFFFF;
-  border-radius: var(--radius-lg);
-  padding: 12px 14px;
-  border: 2px solid #E2E8F0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.03);
-  transition: all 0.2s;
-}
-
-.student-identity {
+.card-top-row {
   display: flex;
   align-items: center;
   gap: 10px;
+  margin-bottom: 8px;
 }
 
-.student-avatar {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #FFCC80, #FFAB91);
+.card-role-emoji {
+  width: 36px;
+  height: 36px;
+  background: #F8F9FA;
+  border: 1px solid var(--naver-border-subtle);
+  border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-heading);
-  font-size: 1.05rem;
-  color: #5D4037;
-  border: 2px solid #FFFFFF;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  font-size: 18px;
   flex-shrink: 0;
 }
 
-.student-name {
-  font-family: var(--font-heading);
-  font-size: 1.25rem;
-  color: #1A202C;
+.card-role-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.card-role-num {
+  font-size: 11px;
+  color: var(--naver-text-subtle);
+  font-weight: 600;
+}
+
+.card-role-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--naver-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   letter-spacing: -0.3px;
 }
 
-.student-empty {
-  color: #A0AEC0;
-  font-style: italic;
-  font-size: 0.95rem;
-  font-family: var(--font-body);
+.card-duty-box {
+  background: #F8F9FA;
+  border-radius: var(--radius-xs);
+  padding: 7px 10px;
+  font-size: 12px;
+  color: var(--naver-text-body);
+  line-height: 1.45;
+  min-height: 48px;
+  margin-bottom: 12px;
+}
+
+.card-student-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px dashed var(--naver-border-subtle);
+  padding-top: 10px;
+}
+
+.student-tag-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #E8F8F0;
+  border: 1px solid var(--naver-green-border);
+  padding: 3px 8px;
+  border-radius: 12px;
+}
+
+.student-initial-circle {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--naver-green);
+  color: #FFFFFF;
+  font-size: 10px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.student-assigned-name {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--naver-green-dark);
+}
+
+.student-assigned-name.empty-student {
+  color: #94A3B8;
+  font-weight: 500;
 }
 
 .btn-card-swap {
-  background: #F8FAFC;
-  border: 1px solid #CBD5E1;
-  color: #64748B;
-  padding: 5px 10px;
-  font-size: 0.78rem;
-  border-radius: var(--radius-sm);
+  background: #FFFFFF;
+  border: 1px solid var(--naver-border);
+  border-radius: var(--radius-xs);
+  color: var(--naver-text-muted);
+  font-size: 11.5px;
+  padding: 3px 8px;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: all 0.12s;
 }
+
 .btn-card-swap:hover {
-  background: #E2E8F0;
-  color: #1E293B;
+  background: #F5F6F7;
+  color: var(--naver-text-primary);
+  border-color: #CBD5E1;
 }
 
-/* Shuffle Reveal Animation */
+/* Card reveal animation */
 .card-revealed {
-  animation: card-pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: naver-card-pop 0.35s ease-out;
 }
 
-@keyframes card-pop {
-  0% { transform: scale(0.92); opacity: 0.7; }
-  50% { transform: scale(1.04); }
+@keyframes naver-card-pop {
+  0% { transform: scale(0.96); opacity: 0.8; }
   100% { transform: scale(1); opacity: 1; }
 }
 
 /* ========================================================
-   Table View Mode
+   Naver Table View
    ======================================================== */
-.table-card {
-  background: #FFFFFF;
-  border-radius: var(--radius-xl);
-  overflow: hidden;
-  box-shadow: var(--shadow-sm);
-  border: 1px solid #E2E8F0;
-}
-
-.roster-table {
+.naver-roster-table {
   width: 100%;
   border-collapse: collapse;
+}
+
+.naver-roster-table th {
+  background: #F8F9FA;
+  padding: 10px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--naver-text-muted);
+  border-bottom: 1px solid var(--naver-border);
   text-align: left;
 }
 
-.roster-table th {
-  background: #F8FAFC;
-  padding: 14px 16px;
-  font-size: 0.88rem;
-  font-weight: 700;
-  color: #475569;
-  border-bottom: 2px solid #E2E8F0;
-}
-
-.roster-table td {
-  padding: 14px 16px;
-  font-size: 0.95rem;
-  border-bottom: 1px solid #EDF2F7;
+.naver-roster-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--naver-border-subtle);
+  font-size: 13px;
   vertical-align: middle;
 }
 
-.roster-table tr:hover {
-  background: #F8FAFC;
-}
-
-.table-student-name {
-  font-family: var(--font-heading);
-  font-size: 1.15rem;
-  color: #D84315;
+.naver-roster-table tr:hover {
+  background: #F8FBF9;
 }
 
 /* ========================================================
-   Modals
+   5. RIGHT SIDEBAR: Naver Login Box, Stats Widget & Shortcuts
+   ======================================================== */
+
+/* 5-1. Naver Login Box Replica */
+.naver-login-panel {
+  padding: 18px;
+}
+
+.login-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.user-greeting {
+  font-size: 14px;
+  color: var(--naver-text-primary);
+}
+
+.naver-badge-sm {
+  font-size: 10px;
+  font-weight: 700;
+  color: #6B7280;
+  background: #F3F4F6;
+  padding: 2px 6px;
+  border-radius: 2px;
+}
+
+.login-class-summary {
+  background: #F8F9FA;
+  border: 1px solid var(--naver-border-subtle);
+  border-radius: var(--radius-xs);
+  padding: 10px 14px;
+  margin-bottom: 14px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.summary-row {
+  display: flex;
+  flex-direction: column;
+}
+
+.summary-label {
+  font-size: 11px;
+  color: var(--naver-text-subtle);
+}
+
+.summary-val {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--naver-text-primary);
+}
+
+/* Iconic Big Green Naver Action Button */
+.naver-login-btn {
+  width: 100%;
+  height: 48px;
+  background: var(--naver-green);
+  color: #FFFFFF;
+  font-size: 15px;
+  font-weight: 800;
+  border: none;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  letter-spacing: -0.3px;
+  box-shadow: 0 2px 4px rgba(3, 199, 90, 0.25);
+  transition: all 0.15s;
+}
+
+.naver-login-btn:hover {
+  background: var(--naver-green-hover);
+  box-shadow: 0 4px 8px rgba(3, 199, 90, 0.35);
+}
+
+.naver-login-btn:active {
+  transform: translateY(1px);
+}
+
+.login-sub-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 14px;
+  font-size: 12px;
+  color: var(--naver-text-muted);
+}
+
+.sub-link-btn {
+  background: transparent;
+  border: none;
+  color: var(--naver-text-muted);
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.sub-link-btn:hover {
+  color: var(--naver-text-primary);
+  text-decoration: underline;
+}
+
+.sub-link-sep {
+  color: #D1D5DB;
+  font-size: 10px;
+}
+
+/* 5-2. Naver Weather/Stock Widget Replica */
+.naver-widget-box {
+  padding: 16px;
+}
+
+.widget-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--naver-border-subtle);
+  padding-bottom: 8px;
+}
+
+.widget-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--naver-text-primary);
+}
+
+.widget-date {
+  font-size: 11px;
+  color: var(--naver-text-subtle);
+}
+
+.progress-info-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  font-size: 12px;
+}
+
+.progress-percent {
+  font-weight: 800;
+  color: var(--naver-green);
+}
+
+.naver-progress-bar {
+  width: 100%;
+  height: 8px;
+  background: #E5E7EB;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--naver-green);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.widget-stats-grid {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background: #F8F9FA;
+  border-radius: var(--radius-xs);
+  padding: 10px 4px;
+}
+
+.w-stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.w-stat-num {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--naver-text-primary);
+}
+
+.w-stat-name {
+  font-size: 11px;
+  color: var(--naver-text-muted);
+}
+
+.w-stat-divider {
+  width: 1px;
+  height: 22px;
+  background: #E5E7EB;
+}
+
+/* 5-3. Naver Quick Shortcut Box */
+.naver-shortcut-box {
+  padding: 16px;
+}
+
+.shortcut-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--naver-text-primary);
+  margin-bottom: 10px;
+}
+
+.shortcut-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.shortcut-item {
+  width: 100%;
+  background: #FFFFFF;
+  border: 1px solid var(--naver-border-subtle);
+  border-radius: var(--radius-xs);
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s;
+}
+
+.shortcut-item:hover {
+  background: #F4FBF7;
+  border-color: var(--naver-green-border);
+}
+
+.shortcut-icon {
+  font-size: 18px;
+}
+
+.shortcut-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.shortcut-text strong {
+  font-size: 12.5px;
+  color: var(--naver-text-primary);
+}
+
+.shortcut-text span {
+  font-size: 11px;
+  color: var(--naver-text-subtle);
+}
+
+.shortcut-arrow {
+  font-size: 16px;
+  color: #9CA3AF;
+}
+
+/* Naver Ad-Banner Style Motto */
+.naver-banner-motto {
+  background: linear-gradient(135deg, #03C75A, #029E45);
+  color: #FFFFFF;
+  padding: 14px 16px;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 2px 6px rgba(3, 199, 90, 0.2);
+}
+
+.motto-tag {
+  font-size: 10.5px;
+  font-weight: 800;
+  background: rgba(255, 255, 255, 0.25);
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 2px;
+  margin-bottom: 6px;
+}
+
+.motto-text {
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+/* ========================================================
+   6. Modals (Naver Style Clean Card)
    ======================================================== */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.55);
-  backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(2px);
   z-index: 100;
   display: flex;
   align-items: center;
@@ -639,183 +1110,232 @@ body {
   padding: 16px;
 }
 
-.modal-box {
+.naver-modal-box {
   background: #FFFFFF;
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-sm);
   width: 100%;
   max-width: 620px;
   max-height: 90vh;
   display: flex;
   flex-direction: column;
-  box-shadow: var(--shadow-lg);
-  border: 2px solid #FFF3E0;
-  animation: modal-up 0.22s ease-out;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  border: 1px solid #D1D5DB;
+  animation: naver-modal-up 0.2s ease-out;
 }
 
-.modal-lg {
-  max-width: 880px;
+.naver-modal-box.modal-lg { max-width: 860px; }
+.naver-modal-box.modal-sm { max-width: 420px; }
+
+@keyframes naver-modal-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.modal-sm {
-  max-width: 440px;
-}
-
-@keyframes modal-up {
-  from { opacity: 0; transform: translateY(16px) scale(0.97); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-.modal-header {
-  padding: 18px 24px;
-  border-bottom: 1px solid #F1F5F9;
+.naver-modal-header {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--naver-border);
   display: flex;
   align-items: center;
   justify-content: space-between;
+  background: #FAFBFB;
 }
 
-.modal-title {
-  font-family: var(--font-heading);
-  font-size: 1.3rem;
-  color: #1E293B;
+.naver-modal-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--naver-text-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-.modal-close {
+.naver-icon-green {
+  font-size: 16px;
+}
+
+.naver-modal-close {
   background: transparent;
   border: none;
-  font-size: 1.25rem;
-  color: #94A3B8;
+  font-size: 16px;
+  color: #9CA3AF;
   cursor: pointer;
-  padding: 4px 8px;
-  border-radius: var(--radius-sm);
+  padding: 4px;
 }
-.modal-close:hover {
-  background: #F1F5F9;
-  color: #0F172A;
+.naver-modal-close:hover {
+  color: #111827;
 }
 
-.modal-body {
-  padding: 20px 24px;
+.naver-modal-body {
+  padding: 18px 20px;
   overflow-y: auto;
-  font-size: 0.92rem;
-  color: #334155;
+  font-size: 13px;
+  color: var(--naver-text-body);
 }
 
-.modal-desc {
-  line-height: 1.6;
-  margin-bottom: 16px;
-  background: #F8FAFC;
-  padding: 12px 16px;
-  border-radius: var(--radius-md);
-  border-left: 4px solid var(--color-secondary);
+.naver-modal-desc {
+  background: #F8F9FA;
+  border-left: 3px solid var(--naver-green);
+  padding: 10px 14px;
+  border-radius: 2px;
+  margin-bottom: 14px;
+  line-height: 1.5;
+  color: #4B5563;
 }
 
-.modal-footer {
-  padding: 16px 24px;
-  border-top: 1px solid #F1F5F9;
+.naver-modal-footer {
+  padding: 12px 20px;
+  border-top: 1px solid var(--naver-border);
+  background: #FAFBFB;
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 10px;
-  background: #FBFBFB;
-  border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+  gap: 8px;
 }
 
-/* Forms inside modal */
-.form-group {
-  margin-bottom: 16px;
+/* Naver Form Controls */
+.naver-form-group {
+  margin-bottom: 14px;
 }
 
-.form-group label {
+.naver-form-group label {
   display: block;
   margin-bottom: 6px;
-  font-size: 0.88rem;
-  color: #334155;
+  font-size: 12.5px;
+  color: var(--naver-text-body);
 }
 
-.form-input, .form-textarea, .form-select {
+.naver-form-input, .naver-form-textarea, .naver-form-select {
   width: 100%;
-  padding: 10px 14px;
-  border-radius: var(--radius-md);
-  border: 1.5px solid #CBD5E1;
-  font-family: var(--font-body);
-  font-size: 0.92rem;
+  padding: 8px 12px;
+  border: 1px solid #D1D5DB;
+  border-radius: var(--radius-xs);
+  font-family: inherit;
+  font-size: 13px;
   outline: none;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  transition: border-color 0.15s;
 }
 
-.form-input:focus, .form-textarea:focus, .form-select:focus {
-  border-color: #3B82F6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+.naver-form-input:focus, .naver-form-textarea:focus, .naver-form-select:focus {
+  border-color: var(--naver-green);
+  box-shadow: 0 0 0 2px rgba(3, 199, 90, 0.15);
 }
 
 .form-emoji {
-  width: 60px;
+  width: 52px;
   text-align: center;
-  font-size: 1.2rem;
+  font-size: 16px;
 }
 
-.field-hint {
+.naver-field-hint {
   display: block;
-  font-size: 0.78rem;
-  color: #64748B;
-  margin-top: 5px;
+  font-size: 11px;
+  color: var(--naver-text-subtle);
+  margin-top: 4px;
 }
 
-.modal-section-box {
-  background: #F8FAFC;
-  border-radius: var(--radius-md);
-  padding: 16px;
-  border: 1px solid #E2E8F0;
-  margin-top: 14px;
+/* Modal Buttons */
+.naver-btn-green {
+  background: var(--naver-green);
+  color: #FFFFFF;
+  border: none;
+  border-radius: var(--radius-xs);
+  padding: 8px 16px;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+}
+.naver-btn-green:hover { background: var(--naver-green-hover); }
+
+.naver-btn-outline {
+  background: #FFFFFF;
+  color: var(--naver-text-body);
+  border: 1px solid #D1D5DB;
+  border-radius: var(--radius-xs);
+  padding: 8px 14px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.naver-btn-outline:hover { background: #F3F4F6; }
+
+.naver-btn-subtle {
+  background: #F3F4F6;
+  color: #4B5563;
+  border: 1px solid #E5E7EB;
+  border-radius: var(--radius-xs);
+  padding: 8px 14px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.naver-btn-subtle:hover { background: #E5E7EB; }
+
+.naver-btn-small {
+  padding: 3px 8px;
+  font-size: 11.5px;
+  border: 1px solid #D1D5DB;
+  background: #FFFFFF;
+  border-radius: 2px;
+  cursor: pointer;
+}
+.naver-btn-small:hover { background: #F3F4F6; }
+
+.naver-btn-danger { color: #DC2626; border-color: #FCA5A5; }
+.naver-btn-danger:hover { background: #FEF2F2; }
+
+/* Guide & Code inside Modal */
+.naver-guide-box {
+  background: #F8F9FA;
+  border: 1px solid var(--naver-border);
+  border-radius: var(--radius-xs);
+  padding: 12px;
+  margin-top: 12px;
 }
 
-.modal-section-box h4 {
-  font-size: 0.95rem;
-  color: #1E293B;
-  margin-bottom: 8px;
+.naver-guide-box h4 {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--naver-text-primary);
+  margin-bottom: 6px;
 }
 
-.guide-steps {
+.naver-guide-list {
   padding-left: 18px;
-  margin-bottom: 12px;
-  font-size: 0.84rem;
+  font-size: 11.5px;
+  color: #4B5563;
   line-height: 1.6;
-  color: #475569;
+  margin-bottom: 10px;
 }
 
-.code-header {
+.code-copy-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 6px;
-  font-size: 0.8rem;
+  margin-bottom: 4px;
+  font-size: 11.5px;
   font-weight: 600;
-  color: #64748B;
+  color: var(--naver-text-muted);
 }
 
-.code-preview {
-  background: #1E293B;
-  color: #F8FAFC;
-  padding: 12px;
-  border-radius: var(--radius-sm);
-  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
-  font-size: 0.76rem;
-  line-height: 1.5;
-  max-height: 180px;
+.naver-code-box {
+  background: #1F2937;
+  color: #F9FAFB;
+  padding: 10px;
+  border-radius: 3px;
+  font-family: Consolas, monospace;
+  font-size: 11px;
+  max-height: 160px;
   overflow-y: auto;
+  line-height: 1.45;
 }
 
-/* Manage Modal Specific */
+/* Manage Modal Specific Grid */
 .manage-grid {
   display: grid;
   grid-template-columns: 1fr 1.3fr;
-  gap: 20px;
+  gap: 16px;
 }
 
 @media (max-width: 768px) {
-  .manage-grid {
-    grid-template-columns: 1fr;
-  }
+  .manage-grid { grid-template-columns: 1fr; }
 }
 
 .manage-col-header {
@@ -827,59 +1347,59 @@ body {
 
 .quick-add-row {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   margin-top: 8px;
 }
 
 .roles-editor-list {
-  max-height: 250px;
+  max-height: 240px;
   overflow-y: auto;
-  border: 1px solid #E2E8F0;
-  border-radius: var(--radius-md);
-  padding: 8px;
-  margin-bottom: 12px;
+  border: 1px solid var(--naver-border);
+  border-radius: var(--radius-xs);
+  padding: 6px;
+  margin: 6px 0 10px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
 }
 
 .role-editor-item {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   background: #FFFFFF;
-  padding: 6px 10px;
-  border-radius: var(--radius-sm);
-  border: 1px solid #EDF2F7;
+  padding: 4px 6px;
+  border-radius: 2px;
+  border: 1px solid var(--naver-border-subtle);
 }
 
 .role-editor-item input {
-  padding: 4px 8px;
-  font-size: 0.85rem;
-  border: 1px solid #CBD5E1;
-  border-radius: 4px;
+  padding: 3px 6px;
+  font-size: 12px;
+  border: 1px solid #D1D5DB;
+  border-radius: 2px;
 }
 
 .add-role-box {
-  background: #F8FAFC;
-  border: 1px dashed #CBD5E1;
-  border-radius: var(--radius-md);
-  padding: 12px;
+  background: #F9FAFB;
+  border: 1px dashed #D1D5DB;
+  border-radius: var(--radius-xs);
+  padding: 10px;
 }
 
 .add-role-box h5 {
-  font-size: 0.85rem;
+  font-size: 12px;
+  color: #374151;
   margin-bottom: 6px;
-  color: #475569;
 }
 
 .role-inputs-grid {
   display: flex;
-  gap: 8px;
+  gap: 6px;
 }
 
 /* ========================================================
-   Toast Notification
+   7. Toast Notification (Naver Style Dark Floating Bar)
    ======================================================== */
 .toast-container {
   position: fixed;
@@ -893,58 +1413,82 @@ body {
 }
 
 .toast {
-  background: #1E293B;
+  background: #111827;
   color: #FFFFFF;
-  padding: 12px 18px;
-  border-radius: var(--radius-md);
-  font-size: 0.92rem;
-  box-shadow: var(--shadow-lg);
+  padding: 10px 16px;
+  border-radius: var(--radius-xs);
+  font-size: 13px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   pointer-events: auto;
   display: flex;
   align-items: center;
-  gap: 10px;
-  animation: toast-in 0.25s ease-out;
+  gap: 8px;
+  animation: naver-toast-in 0.2s ease-out;
 }
 
-.toast-success {
-  background: #1B5E20;
-  border-left: 4px solid #81C784;
-}
+.toast-success { border-left: 4px solid var(--naver-green); }
+.toast-info { border-left: 4px solid #3B82F6; }
+.toast-warning { border-left: 4px solid #F59E0B; }
 
-.toast-info {
-  background: #0D47A1;
-  border-left: 4px solid #64B5F6;
-}
-
-.toast-warning {
-  background: #E65100;
-  border-left: 4px solid #FFB74D;
-}
-
-@keyframes toast-in {
-  from { transform: translateY(20px); opacity: 0; }
+@keyframes naver-toast-in {
+  from { transform: translateY(16px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
 
-/* Helper hidden */
+/* Naver Style Footer */
+.naver-footer {
+  background: #FFFFFF;
+  border-top: 1px solid var(--naver-border);
+  padding: 24px 20px;
+  margin-top: 40px;
+  font-size: 12px;
+  color: var(--naver-text-subtle);
+}
+
+.footer-inner {
+  max-width: var(--naver-max-width);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.footer-links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.footer-links a:hover {
+  text-decoration: underline;
+  color: var(--naver-text-primary);
+}
+
+.sep {
+  color: #D1D5DB;
+  font-size: 10px;
+}
+
+.footer-corp {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.naver-corp-logo {
+  font-weight: 900;
+  color: var(--naver-green);
+  letter-spacing: -0.5px;
+}
+
 .hidden {
   display: none !important;
 }
 
-/* Footer */
-.app-footer {
-  text-align: center;
-  padding: 24px;
-  color: #94A3B8;
-  font-size: 0.82rem;
-  border-top: 1px solid #E2E8F0;
-  margin-top: 40px;
-}
-
 /* ========================================================
-   Print Layout (A4 Bulletin Board Optimization)
+   8. 교실 게시판 부착용 A4 인쇄 서식 (@media print)
    ======================================================== */
-/* On screen, the print area is hidden by default */
 .print-sheet-area {
   display: none;
 }
@@ -958,12 +1502,12 @@ body {
   body {
     background: #FFFFFF !important;
     color: #000000 !important;
-    font-size: 11pt;
+    font-size: 10pt;
     margin: 0;
     padding: 0;
   }
 
-  .no-print, .app-header, .classroom-bar, .filter-bar, .role-grid-section, .role-table-section, .modal-overlay, .toast-container, .app-footer {
+  .no-print, .naver-top-bar, .naver-header-search, .naver-gnb, .naver-side-col, .class-title-box, .stand-header, .stand-quick-guide, .role-grid-section, .modal-overlay, .toast-container, .naver-footer {
     display: none !important;
   }
 
@@ -977,13 +1521,12 @@ body {
     width: 100%;
     background: #FFFFFF;
     color: #111827;
-    padding: 0;
   }
 
   .print-header {
-    border-bottom: 2.5px solid #2D3748;
-    padding-bottom: 8px;
-    margin-bottom: 12px;
+    border-bottom: 2.5px solid #111827;
+    padding-bottom: 6px;
+    margin-bottom: 10px;
   }
 
   .print-header-top {
@@ -992,17 +1535,17 @@ body {
     justify-content: space-between;
     font-size: 11pt;
     font-weight: 700;
-    color: #4A5568;
+    color: #374151;
     margin-bottom: 4px;
   }
 
   .print-school {
-    font-size: 12pt;
-    color: #1A202C;
+    font-size: 13pt;
+    color: #000000;
   }
 
   .print-tag {
-    background: #EDF2F7 !important;
+    background: #F3F4F6 !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
     padding: 2px 8px;
@@ -1012,9 +1555,9 @@ body {
 
   .print-title {
     text-align: center;
-    font-size: 19pt;
-    font-family: var(--font-heading);
-    color: #1A202C;
+    font-size: 18pt;
+    font-weight: 800;
+    color: #000000;
     margin: 6px 0;
     letter-spacing: -0.5px;
   }
@@ -1023,48 +1566,47 @@ body {
     display: flex;
     justify-content: space-between;
     font-size: 9.5pt;
-    color: #4A5568;
+    color: #4B5563;
     margin-top: 4px;
   }
 
   .print-table {
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: 10px;
-    font-size: 9.5pt;
+    margin-bottom: 8px;
+    font-size: 9pt;
   }
 
   .print-table th, .print-table td {
-    border: 1px solid #718096;
-    padding: 6px 8px;
+    border: 1px solid #4B5563;
+    padding: 5px 6px;
     text-align: center;
     vertical-align: middle;
   }
 
   .print-table th {
-    background-color: #E2E8F0 !important;
+    background-color: #E5E7EB !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
     font-weight: 700;
-    color: #1A202C;
-    font-size: 9.5pt;
+    color: #000000;
   }
 
   .p-col-no { width: 5%; }
   .p-col-role { width: 22%; font-weight: 700; text-align: left !important; }
-  .p-col-duty { width: 38%; text-align: left !important; font-size: 9pt; }
-  .p-col-student { width: 17%; font-size: 11pt; font-weight: 700; background: #F8FAFC !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  .p-col-check { width: 18%; font-size: 8.5pt; color: #718096; }
+  .p-col-duty { width: 38%; text-align: left !important; font-size: 8.5pt; }
+  .p-col-student { width: 17%; font-size: 10.5pt; font-weight: 800; background: #F9FAFB !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .p-col-check { width: 18%; font-size: 8.5pt; color: #6B7280; }
 
   .print-footer {
     display: flex;
     align-items: center;
     justify-content: space-between;
     font-size: 8.5pt;
-    color: #4A5568;
-    border-top: 1px dashed #CBD5E1;
-    padding-top: 8px;
-    margin-top: 8px;
+    color: #4B5563;
+    border-top: 1px dashed #9CA3AF;
+    padding-top: 6px;
+    margin-top: 6px;
   }
 
   .print-promise {

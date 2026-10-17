@@ -1,6 +1,6 @@
 /**
- * 우리 반 1인 1역할 배정 도우미 - script.js
- * 역할 랜덤 매칭, 모달 상호작용, A4 인쇄 서식, 구글 스프레드시트 연동 준비 로직
+ * NAVER 홈페이지 스타일 학급 1인 1역할 배정 도우미 - script.js
+ * 네이버 포털 UI 연동, 1인 1역할 무작위 배정, A4 인쇄, 구글 스프레드시트 연동 로직
  */
 
 // ========================================================
@@ -31,14 +31,13 @@ const DEFAULT_ROLES = [
 // 2. 애플리케이션 상태 (State)
 // ========================================================
 
-const STORAGE_KEY = "school_role_assigner_data_v1";
+const STORAGE_KEY = "naver_school_role_data_v2";
 
 let appState = {
   className: "🌱 햇살초등학교 3학년 2반",
   periodName: "2026학년도 1학기 (4월)",
   students: [...DEFAULT_STUDENTS],
   roles: JSON.parse(JSON.stringify(DEFAULT_ROLES)),
-  // assignments: [{ roleId: 1, student: "김하늘" }, ...]
   assignments: [],
   appsScriptUrl: "",
   activeView: "grid", // 'grid' | 'table'
@@ -61,7 +60,6 @@ function loadStateFromStorage() {
       if (parsed.periodName) appState.periodName = parsed.periodName;
       if (parsed.appsScriptUrl) appState.appsScriptUrl = parsed.appsScriptUrl;
     } else {
-      // 초기 기본 배정 1회 실행
       autoAssignInitial();
     }
   } catch (e) {
@@ -117,10 +115,8 @@ function assignRolesRandomly() {
     return;
   }
 
-  // 셔플된 학생 목록
   const shuffledStudents = shuffleArray(appState.students);
 
-  // 역할에 1:1 매칭
   appState.assignments = appState.roles.map((role, index) => {
     return {
       roleId: role.id,
@@ -131,19 +127,18 @@ function assignRolesRandomly() {
   saveStateToStorage();
   renderApp();
 
-  // 축하 폭죽 효과 (Canvas Confetti)
   triggerConfetti();
-  showToast("🎉 1인 1역할 무작위 배정이 완료되었습니다!", "success");
+  showToast("🎉 네이버 학급 1인 1역할 무작위 배정이 완료되었습니다!", "success");
 }
 
 function triggerConfetti() {
   if (typeof window.confetti === 'function') {
     try {
       window.confetti({
-        particleCount: 70,
-        spread: 80,
+        particleCount: 80,
+        spread: 90,
         origin: { y: 0.6 },
-        colors: ['#FF7043', '#42A5F5', '#66BB6A', '#FFA726', '#AB47BC', '#EC407A']
+        colors: ['#03C75A', '#02B350', '#2563EB', '#F59E0B', '#EF4444', '#10B981']
       });
     } catch (e) {
       // safe fallback
@@ -160,6 +155,7 @@ function renderApp() {
   renderCardsGrid();
   renderTableView();
   renderPrintSheet();
+  renderSidebarWidget();
 }
 
 function renderStatsAndHeaders() {
@@ -168,6 +164,7 @@ function renderStatsAndHeaders() {
   const statusTextEl = document.getElementById("stat-status-text");
   const classNameInput = document.getElementById("input-class-name");
   const periodNameInput = document.getElementById("input-period-name");
+  const sideSummaryClass = document.getElementById("side-summary-class");
 
   if (studentCountEl) studentCountEl.textContent = appState.students.length;
   if (roleCountEl) roleCountEl.textContent = appState.roles.length;
@@ -179,10 +176,10 @@ function renderStatsAndHeaders() {
       statusTextEl.style.color = "#718096";
     } else if (assignedCount === appState.roles.length) {
       statusTextEl.textContent = `전원 배정 완료 (${assignedCount}명)`;
-      statusTextEl.style.color = "#2E7D32";
+      statusTextEl.style.color = "#03C75A";
     } else {
       statusTextEl.textContent = `부분 배정 (${assignedCount}/${appState.roles.length})`;
-      statusTextEl.style.color = "#E65100";
+      statusTextEl.style.color = "#F59E0B";
     }
   }
 
@@ -192,9 +189,13 @@ function renderStatsAndHeaders() {
   if (periodNameInput && periodNameInput.value !== appState.periodName) {
     periodNameInput.value = appState.periodName;
   }
+  if (sideSummaryClass) {
+    // 간단한 학급 축약 표기
+    sideSummaryClass.textContent = appState.className.replace(/^[^\w가-힣]+/, '').slice(0, 14);
+  }
 }
 
-// 5-1. 카드 그리드 렌더링
+// 5-1. 네이버 뉴스스탠드 스타일 카드 그리드
 function renderCardsGrid() {
   const container = document.getElementById("cards-grid");
   if (!container) return;
@@ -212,10 +213,10 @@ function renderCardsGrid() {
 
   if (filteredRoles.length === 0) {
     container.innerHTML = `
-      <div style="grid-column: 1 / -1; text-align: center; padding: 48px 16px; background: #fff; border-radius: 16px; border: 2px dashed #CBD5E1;">
-        <span style="font-size: 2.5rem;">🔍</span>
-        <h4 style="margin: 12px 0 6px 0; font-family: var(--font-heading); font-size: 1.2rem; color: #475569;">일치하는 검색 결과가 없습니다.</h4>
-        <p style="color: #94A3B8; font-size: 0.9rem;">학생 이름이나 역할 이름 검색어를 확인해 주세요.</p>
+      <div style="grid-column: 1 / -1; text-align: center; padding: 40px 16px; background: #fff; border: 1px solid #E4E8EB; border-radius: 4px;">
+        <span style="font-size: 2rem;">🔍</span>
+        <h4 style="margin: 8px 0 4px 0; font-size: 14px; font-weight: 700; color: #111;">검색된 역할 또는 학생이 없습니다.</h4>
+        <p style="color: #8E8E8E; font-size: 12px;">입력하신 '${escapeHtml(query)}' 키워드를 다시 확인해 보세요.</p>
       </div>
     `;
     return;
@@ -225,28 +226,25 @@ function renderCardsGrid() {
   filteredRoles.forEach((role, idx) => {
     const assignment = appState.assignments.find(a => a.roleId === role.id);
     const studentName = assignment && assignment.student ? assignment.student : "미배정";
-    const themeIndex = idx % 8;
-    const initialChar = studentName !== "미배정" ? studentName.charAt(0) : "👤";
+    const initialChar = studentName !== "미배정" ? studentName.charAt(0) : "N";
+    const isUnassigned = studentName === "미배정";
 
     html += `
-      <article class="role-card theme-${themeIndex} card-revealed" data-role-id="${role.id}">
-        <div class="card-top">
-          <div class="card-emoji-box" aria-hidden="true">${role.emoji || "🌟"}</div>
-          <div class="card-header-info">
-            <span class="card-no-badge">역할 #${idx + 1}</span>
-            <h3 class="card-role-title">${escapeHtml(role.title)}</h3>
+      <article class="naver-role-card card-revealed" data-role-id="${role.id}">
+        <div class="card-top-row">
+          <div class="card-role-emoji" aria-hidden="true">${role.emoji || "🌟"}</div>
+          <div class="card-role-meta">
+            <span class="card-role-num">역할 #${idx + 1}</span>
+            <h3 class="card-role-name" title="${escapeHtml(role.title)}">${escapeHtml(role.title)}</h3>
           </div>
         </div>
 
-        <p class="card-duty-text">${escapeHtml(role.duty)}</p>
+        <div class="card-duty-box">${escapeHtml(role.duty)}</div>
 
-        <div class="card-student-box">
-          <div class="student-identity">
-            <div class="student-avatar">${escapeHtml(initialChar)}</div>
-            <div>
-              <span style="font-size: 0.72rem; color: #718096; display: block;">담당 학생</span>
-              <strong class="student-name ${studentName === '미배정' ? 'student-empty' : ''}">${escapeHtml(studentName)}</strong>
-            </div>
+        <div class="card-student-row">
+          <div class="student-tag-badge">
+            <span class="student-initial-circle">${escapeHtml(initialChar)}</span>
+            <strong class="student-assigned-name ${isUnassigned ? 'empty-student' : ''}">${escapeHtml(studentName)}</strong>
           </div>
           <button class="btn-card-swap" data-action="swap" data-role-id="${role.id}" title="담당 학생을 변경하거나 다른 친구와 교환합니다">
             조정 ⇄
@@ -259,7 +257,7 @@ function renderCardsGrid() {
   container.innerHTML = html;
 }
 
-// 5-2. 명렬표 테이블 렌더링
+// 5-2. 네이버 스타일 명렬표 테이블
 function renderTableView() {
   const tbody = document.getElementById("table-body");
   if (!tbody) return;
@@ -279,20 +277,21 @@ function renderTableView() {
   filteredRoles.forEach((role, idx) => {
     const assignment = appState.assignments.find(a => a.roleId === role.id);
     const studentName = assignment && assignment.student ? assignment.student : "미배정";
+    const isUnassigned = studentName === "미배정";
 
     html += `
       <tr>
-        <td style="text-align: center; font-weight: 600; color: #64748B;">${idx + 1}</td>
+        <td style="text-align: center; color: #8E8E8E; font-weight: 600;">${idx + 1}</td>
         <td>
-          <span style="font-size: 1.2rem; margin-right: 6px;">${role.emoji || "🌟"}</span>
+          <span style="margin-right: 6px;">${role.emoji || "🌟"}</span>
           <strong>${escapeHtml(role.title)}</strong>
         </td>
-        <td style="color: #475569;">${escapeHtml(role.duty)}</td>
+        <td style="color: #4B5563;">${escapeHtml(role.duty)}</td>
         <td>
-          <span class="table-student-name">${escapeHtml(studentName)}</span>
+          <span style="font-weight: 700; color: ${isUnassigned ? '#94A3B8' : '#03C75A'}; font-size: 13.5px;">${escapeHtml(studentName)}</span>
         </td>
         <td>
-          <button class="btn-mini" data-action="swap" data-role-id="${role.id}">
+          <button class="naver-btn-small" data-action="swap" data-role-id="${role.id}">
             변경 ⇄
           </button>
         </td>
@@ -303,7 +302,7 @@ function renderTableView() {
   tbody.innerHTML = html;
 }
 
-// 5-3. 교실 게시판 부착용 A4 인쇄 서식 렌더링
+// 5-3. 교실 게시판 부착용 A4 인쇄 서식
 function renderPrintSheet() {
   const schoolEl = document.getElementById("print-school-name");
   const periodEl = document.getElementById("print-period-display");
@@ -315,7 +314,6 @@ function renderPrintSheet() {
   if (periodEl) periodEl.textContent = appState.periodName;
   if (totalCountEl) totalCountEl.textContent = appState.roles.length;
 
-  // 오늘 날짜 포맷 (예: 2026. 10. 17.)
   const now = new Date();
   const dateStr = `${now.getFullYear()}. ${String(now.getMonth() + 1).padStart(2, '0')}. ${String(now.getDate()).padStart(2, '0')}.`;
   if (dateEl) dateEl.textContent = dateStr;
@@ -344,28 +342,53 @@ function renderPrintSheet() {
   tbody.innerHTML = html;
 }
 
+// 5-4. 네이버 사이드바 위젯 렌더링
+function renderSidebarWidget() {
+  const dateEl = document.getElementById("widget-date-display");
+  const progressText = document.getElementById("widget-progress-text");
+  const progressFill = document.getElementById("widget-progress-fill");
+  const statAssigned = document.getElementById("w-stat-assigned");
+  const statUnassigned = document.getElementById("w-stat-unassigned");
+  const statTotal = document.getElementById("w-stat-total");
+
+  const now = new Date();
+  const days = ["일", "월", "화", "수", "목", "금", "토"];
+  const dateString = `${now.getFullYear()}. ${now.getMonth() + 1}. ${now.getDate()}. (${days[now.getDay()]})`;
+  if (dateEl) dateEl.textContent = dateString;
+
+  const total = appState.roles.length;
+  const assigned = appState.assignments.filter(a => a.student && a.student !== "미배정").length;
+  const unassigned = Math.max(0, total - assigned);
+  const percent = total > 0 ? Math.round((assigned / total) * 100) : 0;
+
+  if (progressText) progressText.textContent = `${percent}%`;
+  if (progressFill) progressFill.style.width = `${percent}%`;
+  if (statAssigned) statAssigned.textContent = assigned;
+  if (statUnassigned) statUnassigned.textContent = unassigned;
+  if (statTotal) statTotal.textContent = total;
+}
+
 // ========================================================
 // 6. 모달 제어 (Sheets Modal, Manage Modal, Swap Modal)
 // ========================================================
 
 function openModal(modalId) {
   const modal = document.getElementById(modalId);
-  if (modal) {
-    modal.classList.remove("hidden");
-  }
+  if (modal) modal.classList.remove("hidden");
 }
 
 function closeModal(modalId) {
   const modal = document.getElementById(modalId);
-  if (modal) {
-    modal.classList.add("hidden");
-  }
+  if (modal) modal.classList.add("hidden");
 }
 
 // 6-1. 구글 스프레드시트 모달
 function initSheetsModal() {
   const btnLoad = document.getElementById("btn-sheet-load");
   const btnSave = document.getElementById("btn-sheet-save");
+  const btnSideLoad = document.getElementById("btn-side-sheets-load");
+  const btnSideSave = document.getElementById("btn-side-sheets-save");
+  const topLinkSheets = document.getElementById("top-link-sheets");
   const modal = document.getElementById("modal-sheets");
   const btnClose = document.getElementById("btn-close-sheets-modal");
   const inputUrl = document.getElementById("input-apps-script-url");
@@ -379,26 +402,34 @@ function initSheetsModal() {
     openModal("modal-sheets");
   }
 
-  btnLoad?.addEventListener("click", () => {
+  function handleLoadClick() {
     if (!appState.appsScriptUrl) {
       openSheetsModalWithSync();
       showToast("먼저 구글 Apps Script Web App URL을 설정해 주세요.", "info");
     } else {
       executeSheetsFetch();
     }
-  });
+  }
 
-  btnSave?.addEventListener("click", () => {
+  function handleSaveClick() {
     if (!appState.appsScriptUrl) {
       openSheetsModalWithSync();
       showToast("먼저 구글 Apps Script Web App URL을 설정해 주세요.", "info");
     } else {
       executeSheetsSave();
     }
+  }
+
+  btnLoad?.addEventListener("click", handleLoadClick);
+  btnSideLoad?.addEventListener("click", handleLoadClick);
+  btnSave?.addEventListener("click", handleSaveClick);
+  btnSideSave?.addEventListener("click", handleSaveClick);
+  topLinkSheets?.addEventListener("click", (e) => {
+    e.preventDefault();
+    openSheetsModalWithSync();
   });
 
   btnClose?.addEventListener("click", () => closeModal("modal-sheets"));
-
   modal?.addEventListener("click", (e) => {
     if (e.target === modal) closeModal("modal-sheets");
   });
@@ -439,26 +470,24 @@ function initSheetsModal() {
       navigator.clipboard.writeText(codeEl.textContent.trim()).then(() => {
         showToast("Apps Script 소스 코드가 클립보드에 복사되었습니다!", "success");
       }).catch(() => {
-        showToast("복사 권한이 거부되었습니다.", "warning");
+        showToast("클립보드 접근 권한이 필요합니다.", "warning");
       });
     }
   });
 }
 
-// 구글 스프레드시트 실제 Fetch 동작
+// 구글 스프레드시트 Fetch 동작
 async function executeSheetsFetch() {
   if (!appState.appsScriptUrl) return;
 
-  showToast("구글 스프레드시트에서 데이터를 불러오는 중...", "info");
+  showToast("네이버 시트 통신: 구글 스프레드시트에서 데이터를 불러옵니다...", "info");
   try {
     const response = await fetch(appState.appsScriptUrl, {
       method: "GET",
       headers: { "Accept": "application/json" }
     });
     
-    if (!response.ok) {
-      throw new Error(`HTTP Error ${response.status}`);
-    }
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
     const data = await response.json();
     if (data.students && Array.isArray(data.students) && data.students.length > 0) {
@@ -475,11 +504,11 @@ async function executeSheetsFetch() {
 
     saveStateToStorage();
     renderApp();
-    showToast(`시트에서 학생 ${appState.students.length}명, 역할 ${appState.roles.length}개를 성공적으로 불러왔습니다!`, "success");
+    showToast(`시트에서 학생 ${appState.students.length}명, 역할 ${appState.roles.length}개를 동기화했습니다!`, "success");
     closeModal("modal-sheets");
   } catch (err) {
     console.error("Sheets fetch error:", err);
-    showToast(`시트 불러오기 오류: URL 권한 및 배포 상태(Anyone)를 확인하세요.`, "warning");
+    showToast("시트 불러오기 실패: Apps Script 배포 URL 및 권한(Anyone)을 확인해 주세요.", "warning");
   }
 }
 
@@ -487,7 +516,7 @@ async function executeSheetsFetch() {
 async function executeSheetsSave() {
   if (!appState.appsScriptUrl) return;
 
-  showToast("현재 배정 결과를 구글 스프레드시트에 전송하는 중...", "info");
+  showToast("네이버 시트 통신: 배정 결과를 스프레드시트에 저장하는 중...", "info");
   try {
     const payload = {
       className: appState.className,
@@ -504,7 +533,6 @@ async function executeSheetsSave() {
       })
     };
 
-    // Google Apps Script endpoint requires no-cors or redirect handling
     await fetch(appState.appsScriptUrl, {
       method: "POST",
       mode: "no-cors",
@@ -523,6 +551,7 @@ async function executeSheetsSave() {
 // 6-2. 명단 및 역할 관리 모달
 function initManageModal() {
   const btnOpen = document.getElementById("btn-open-manage");
+  const btnSideManage = document.getElementById("btn-side-manage");
   const modal = document.getElementById("modal-manage");
   const btnClose = document.getElementById("btn-close-manage-modal");
   const btnSave = document.getElementById("btn-save-manage");
@@ -542,17 +571,19 @@ function initManageModal() {
     renderRolesEditor();
   }
 
-  btnOpen?.addEventListener("click", () => {
+  function handleOpenManage() {
     refreshManageModal();
     openModal("modal-manage");
-  });
+  }
+
+  btnOpen?.addEventListener("click", handleOpenManage);
+  btnSideManage?.addEventListener("click", handleOpenManage);
 
   btnClose?.addEventListener("click", () => closeModal("modal-manage"));
   modal?.addEventListener("click", (e) => {
     if (e.target === modal) closeModal("modal-manage");
   });
 
-  // 개별 학생 즉시 추가
   btnAddStudent?.addEventListener("click", () => {
     const name = inputNewStudent?.value.trim();
     if (name) {
@@ -588,7 +619,6 @@ function initManageModal() {
     }
   });
 
-  // 새 역할 등록
   btnAddRole?.addEventListener("click", () => {
     const emoji = document.getElementById("input-new-role-emoji")?.value.trim() || "🌟";
     const title = document.getElementById("input-new-role-title")?.value.trim();
@@ -613,7 +643,6 @@ function initManageModal() {
     showToast(`'${title}' 역할이 추가되었습니다.`, "success");
   });
 
-  // 저장 버튼
   btnSave?.addEventListener("click", () => {
     if (textareaStudents) {
       const rawText = textareaStudents.value;
@@ -628,7 +657,7 @@ function initManageModal() {
     saveStateToStorage();
     renderApp();
     closeModal("modal-manage");
-    showToast("명단과 역할 변경 사항이 적용되었습니다.", "success");
+    showToast("명단과 역할 변경 사항이 저장되었습니다.", "success");
   });
 }
 
@@ -642,17 +671,16 @@ function renderRolesEditor() {
   appState.roles.forEach((role, idx) => {
     html += `
       <div class="role-editor-item" data-id="${role.id}">
-        <span style="font-size: 1.1rem; width: 28px; text-align: center;">${role.emoji || "🌟"}</span>
+        <span style="font-size: 14px; width: 24px; text-align: center;">${role.emoji || "🌟"}</span>
         <input type="text" value="${escapeHtml(role.title)}" class="role-edit-title" style="width: 140px;" placeholder="역할명" />
-        <input type="text" value="${escapeHtml(role.duty)}" class="role-edit-duty" style="flex: 1;" placeholder="맡은 일 설명" />
-        <button class="btn-mini btn-danger-text" data-action="delete-role" data-id="${role.id}" title="역할 삭제">삭제</button>
+        <input type="text" value="${escapeHtml(role.duty)}" class="role-edit-duty" style="flex: 1;" placeholder="실천 내용" />
+        <button class="naver-btn-small naver-btn-danger" data-action="delete-role" data-id="${role.id}">삭제</button>
       </div>
     `;
   });
 
   container.innerHTML = html;
 
-  // 인라인 수정 이벤트 리스너 바인딩
   container.querySelectorAll(".role-editor-item").forEach(item => {
     const id = parseInt(item.getAttribute("data-id"), 10);
     const titleInput = item.querySelector(".role-edit-title");
@@ -685,7 +713,6 @@ function initSwapModal() {
   const btnClose = document.getElementById("btn-close-swap-modal");
   const selectStudent = document.getElementById("select-student-target");
   const btnConfirm = document.getElementById("btn-confirm-swap");
-  const roleInfoEl = document.getElementById("swap-role-info");
 
   btnClose?.addEventListener("click", () => closeModal("modal-swap"));
   modal?.addEventListener("click", (e) => {
@@ -699,7 +726,6 @@ function initSwapModal() {
     const currentAssignment = appState.assignments.find(a => a.roleId === currentSwappingRoleId);
     const oldStudent = currentAssignment ? currentAssignment.student : "미배정";
 
-    // 만약 이미 다른 역할을 맡고 있던 학생이라면 맞교환 (Swap)
     const existingOtherAssignment = appState.assignments.find(a => a.roleId !== currentSwappingRoleId && a.student === targetStudent);
 
     if (existingOtherAssignment) {
@@ -730,11 +756,11 @@ function openSwapModalForRole(roleId) {
   const infoEl = document.getElementById("swap-role-info");
   if (infoEl && role) {
     infoEl.innerHTML = `
-      <div style="background: #F8FAFC; padding: 12px; border-radius: 10px; margin-bottom: 12px; border: 1px solid #E2E8F0;">
-        <span style="font-size: 1.5rem; margin-right: 6px;">${role.emoji}</span>
-        <strong style="font-size: 1.1rem; color: #1E293B;">${escapeHtml(role.title)}</strong>
-        <div style="margin-top: 6px; font-size: 0.88rem; color: #64748B;">
-          현재 담당: <span style="font-weight: 700; color: #D84315;">${escapeHtml(currentStudent)}</span>
+      <div style="background: #F8F9FA; padding: 10px 14px; border-radius: 4px; margin-bottom: 12px; border: 1px solid #E4E8EB;">
+        <span style="font-size: 16px; margin-right: 6px;">${role.emoji}</span>
+        <strong style="font-size: 14px; color: #111;">${escapeHtml(role.title)}</strong>
+        <div style="margin-top: 4px; font-size: 12px; color: #666;">
+          현재 담당: <span style="font-weight: 700; color: #03C75A;">${escapeHtml(currentStudent)}</span>
         </div>
       </div>
     `;
@@ -756,15 +782,23 @@ function openSwapModalForRole(roleId) {
 }
 
 // ========================================================
-// 7. A4 인쇄 및 클립보드 텍스트 복사 기능
+// 7. 메인 액션 및 검색창 바인딩
 // ========================================================
 
 function initActions() {
   const btnAssign = document.getElementById("btn-assign");
+  const btnSideAssign = document.getElementById("btn-side-assign");
+  const btnSideReassign = document.getElementById("btn-side-reassign");
   const btnPrint = document.getElementById("btn-print");
+  const btnSidePrint = document.getElementById("btn-side-print");
+  const topLinkPrint = document.getElementById("top-link-print");
   const btnCopy = document.getElementById("btn-copy-text");
+  const btnSideCopy = document.getElementById("btn-side-copy");
   const btnReset = document.getElementById("btn-reset");
+  const btnSideReset = document.getElementById("btn-side-reset");
   const searchInput = document.getElementById("input-search");
+  const btnSearchTrigger = document.getElementById("btn-search-trigger");
+  const btnSearchClear = document.getElementById("btn-search-clear");
   const btnGrid = document.getElementById("btn-view-grid");
   const btnTable = document.getElementById("btn-view-table");
   const cardsContainer = document.getElementById("role-cards-container");
@@ -772,20 +806,25 @@ function initActions() {
   const inputClassName = document.getElementById("input-class-name");
   const inputPeriodName = document.getElementById("input-period-name");
 
-  // 무작위 역할 배정 버튼
-  btnAssign?.addEventListener("click", () => {
-    assignRolesRandomly();
-  });
+  // 무작위 역할 배정 버튼들
+  const handleAssign = () => assignRolesRandomly();
+  btnAssign?.addEventListener("click", handleAssign);
+  btnSideAssign?.addEventListener("click", handleAssign);
+  btnSideReassign?.addEventListener("click", handleAssign);
 
-  // A4 게시판 인쇄 버튼
-  btnPrint?.addEventListener("click", () => {
+  // A4 게시판 인쇄 버튼들
+  const handlePrint = (e) => {
+    if (e && e.preventDefault) e.preventDefault();
     renderPrintSheet();
     window.print();
-  });
+  };
+  btnPrint?.addEventListener("click", handlePrint);
+  btnSidePrint?.addEventListener("click", handlePrint);
+  topLinkPrint?.addEventListener("click", handlePrint);
 
-  // 메신저 및 알림장용 텍스트 복사 버튼
-  btnCopy?.addEventListener("click", () => {
-    let text = `[${appState.className} 1인 1역할 배정표]\n`;
+  // 클립보드 텍스트 복사 버튼들
+  const handleCopy = () => {
+    let text = `[NAVER 학급도우미 - ${appState.className} 1인 1역할 배정표]\n`;
     text += `기간: ${appState.periodName}\n\n`;
 
     appState.roles.forEach((role, i) => {
@@ -795,30 +834,67 @@ function initActions() {
     });
 
     navigator.clipboard.writeText(text).then(() => {
-      showToast("📋 전체 역할 배정 텍스트가 복사되었습니다! (알림장·메신저 붙여넣기)", "success");
+      showToast("📋 네이버 클립보드: 전체 배정표 텍스트가 복사되었습니다!", "success");
     }).catch(() => {
-      showToast("복사 실패: 권한을 허용해 주세요.", "warning");
+      showToast("클립보드 접근 권한이 필요합니다.", "warning");
     });
-  });
+  };
+  btnCopy?.addEventListener("click", handleCopy);
+  btnSideCopy?.addEventListener("click", handleCopy);
 
-  // 초기화 버튼
-  btnReset?.addEventListener("click", () => {
+  // 초기화 버튼들
+  const handleReset = () => {
     if (confirm("배정 상태를 초기화하시겠습니까?")) {
       appState.assignments = appState.roles.map(r => ({ roleId: r.id, student: "미배정" }));
       saveStateToStorage();
       renderApp();
       showToast("배정 상태가 초기화되었습니다.", "info");
     }
-  });
+  };
+  btnReset?.addEventListener("click", handleReset);
+  btnSideReset?.addEventListener("click", handleReset);
 
-  // 실시간 검색
+  // 네이버 검색창 입력 & 클리어 버튼
   searchInput?.addEventListener("input", (e) => {
     appState.searchQuery = e.target.value;
+    if (btnSearchClear) {
+      btnSearchClear.style.display = e.target.value.length > 0 ? "block" : "none";
+    }
     renderCardsGrid();
     renderTableView();
   });
 
-  // 뷰 전환 (카드 vs 명렬표)
+  btnSearchClear?.addEventListener("click", () => {
+    if (searchInput) {
+      searchInput.value = "";
+      btnSearchClear.style.display = "none";
+      appState.searchQuery = "";
+      renderCardsGrid();
+      renderTableView();
+      searchInput.focus();
+    }
+  });
+
+  btnSearchTrigger?.addEventListener("click", () => {
+    renderCardsGrid();
+    renderTableView();
+  });
+
+  // 실시간 키워드 클릭 시 검색창 자동 반영
+  document.querySelectorAll(".rt-item").forEach(item => {
+    item.addEventListener("click", () => {
+      const keyword = item.textContent.replace(/^[0-9\s▲\-]+/, '').trim();
+      if (searchInput && keyword) {
+        searchInput.value = keyword;
+        appState.searchQuery = keyword;
+        if (btnSearchClear) btnSearchClear.style.display = "block";
+        renderCardsGrid();
+        renderTableView();
+      }
+    });
+  });
+
+  // 뷰 모드 전환 (카드형 vs 목록형)
   btnGrid?.addEventListener("click", () => {
     btnGrid.classList.add("active");
     btnTable?.classList.remove("active");
@@ -835,10 +911,11 @@ function initActions() {
     appState.activeView = "table";
   });
 
-  // 학급명 및 기간 편집 반영
+  // 학급명 및 기간 수정
   inputClassName?.addEventListener("change", (e) => {
     appState.className = e.target.value.trim() || "우리 반";
     saveStateToStorage();
+    renderStatsAndHeaders();
     renderPrintSheet();
   });
 
@@ -848,20 +925,18 @@ function initActions() {
     renderPrintSheet();
   });
 
-  // 카드 및 테이블 내의 "조정/변경" 버튼 위임 처리
+  // 카드 내 '조정' 버튼 이벤트 위임
   document.addEventListener("click", (e) => {
     const swapBtn = e.target.closest("[data-action='swap']");
     if (swapBtn) {
       const roleId = parseInt(swapBtn.getAttribute("data-role-id"), 10);
-      if (roleId) {
-        openSwapModalForRole(roleId);
-      }
+      if (roleId) openSwapModalForRole(roleId);
     }
   });
 }
 
 // ========================================================
-// 8. 토스트 알림 (Toast UI)
+// 8. 네이버 스타일 토스트 알림
 // ========================================================
 
 function showToast(message, type = "info") {
@@ -876,10 +951,10 @@ function showToast(message, type = "info") {
   container.appendChild(toast);
 
   setTimeout(() => {
-    toast.style.transition = "opacity 0.3s, transform 0.3s";
+    toast.style.transition = "opacity 0.25s, transform 0.25s";
     toast.style.opacity = "0";
     toast.style.transform = "translateY(10px)";
-    setTimeout(() => toast.remove(), 300);
+    setTimeout(() => toast.remove(), 250);
   }, 3200);
 }
 
@@ -894,7 +969,7 @@ function escapeHtml(str) {
 }
 
 // ========================================================
-// 9. 초기화 실행 (App Bootstrap)
+// 9. 초기화 실행 (Bootstrap)
 // ========================================================
 
 document.addEventListener("DOMContentLoaded", () => {

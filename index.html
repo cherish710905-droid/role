@@ -3,19 +3,19 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>우리 반 1인 1역할 배정 도우미</title>
-    <meta name="description" content="초등학교 교실을 위한 귀엽고 산뜻한 1인 1역할 무작위 배정, A4 게시판 인쇄, 구글 스프레드시트 연동 준비 웹 애플리케이션" />
-    <meta property="og:title" content="우리 반 1인 1역할 배정 도우미" />
-    <meta property="og:description" content="초등학교 교실을 위한 귀엽고 산뜻한 1인 1역할 무작위 배정, A4 게시판 인쇄, 구글 스프레드시트 연동 준비 웹 애플리케이션" />
+    <title>NAVER 학급도우미 - 1인 1역할 배정</title>
+    <meta name="description" content="네이버 포털 스타일의 초등학교 1인 1역할 무작위 배정 및 A4 인쇄, 구글 스프레드시트 연동 웹 애플리케이션" />
+    <meta property="og:title" content="NAVER 학급도우미 - 1인 1역할 배정" />
+    <meta property="og:description" content="네이버 포털 스타일의 초등학교 1인 1역할 무작위 배정 및 A4 인쇄, 구글 스프레드시트 연동 웹 애플리케이션" />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
     
-    <!-- Google Fonts for cute elementary school vibe and crisp readability -->
+    <!-- Crisp Naver-style Korean Typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     
-    <!-- Canvas Confetti for joyful matching animation -->
+    <!-- Canvas Confetti for celebratory matching -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.min.js"></script>
 
     <!-- Stylesheet -->
@@ -23,117 +23,289 @@
   </head>
   <body>
     <!-- App Container -->
-    <div id="app" class="app-wrapper">
+    <div id="app" class="naver-layout">
       
-      <!-- Top Navigation & Google Sheets Bridge Bar -->
-      <header class="app-header no-print">
-        <div class="header-inner">
-          <div class="brand-group">
-            <span class="brand-mascot" aria-hidden="true">🎒</span>
-            <div class="brand-text">
-              <h1 class="brand-title">우리 반 1인 1역할 도우미</h1>
-              <p class="brand-subtitle">모두가 주인공이 되는 행복한 우리 교실 🌟</p>
-            </div>
+      <!-- 1. Naver Top Quick Bar -->
+      <header class="naver-top-bar no-print">
+        <div class="top-bar-inner">
+          <div class="top-left-links">
+            <span class="naver-service-label">네이버 학급 서비스</span>
+            <span class="bar-divider">|</span>
+            <a href="#role-cards-container" class="top-link active">1인 1역할 배정</a>
+            <a href="#print-area" class="top-link" id="top-link-print">게시판 인쇄</a>
+            <a href="#" class="top-link" id="top-link-sheets">구글시트 연동</a>
           </div>
-
-          <div class="header-actions">
-            <!-- Google Sheets Integration Buttons as requested -->
-            <button id="btn-sheet-load" class="btn btn-outline" title="구글 스프레드시트에서 학생과 역할 불러오기">
-              <span class="btn-icon">🔄</span> 시트 불러오기
-            </button>
-            <button id="btn-sheet-save" class="btn btn-outline" title="현재 배정 결과를 구글 스프레드시트에 저장하기">
-              <span class="btn-icon">💾</span> 시트에 결과 저장
-            </button>
-            <button id="btn-open-manage" class="btn btn-secondary" title="학생 명단 및 역할 목록 수정">
-              <span class="btn-icon">⚙️</span> 명단·역할 관리
+          <div class="top-right-links">
+            <span class="top-user-info">선생님 교탁 모드</span>
+            <button id="btn-open-manage" class="top-setting-btn" title="학생 명단 및 역할 관리">
+              <span class="gear-icon">⚙️</span> 명단·역할 관리
             </button>
           </div>
         </div>
       </header>
 
-      <!-- Main Content Area -->
-      <main class="main-content">
-        
-        <!-- Classroom Banner & Control Toolbar -->
-        <section class="classroom-bar no-print">
-          <div class="classroom-info">
-            <div class="class-title-row">
-              <input type="text" id="input-class-name" class="editable-class-name" value="🌱 햇살초등학교 3학년 2반" placeholder="학교 및 학급명을 입력하세요" title="클릭하여 학급명을 수정할 수 있습니다" />
-              <input type="text" id="input-period-name" class="editable-period-name" value="2026학년도 1학기 (4월)" placeholder="기간 입력" title="클릭하여 기간을 수정할 수 있습니다" />
+      <!-- 2. Naver Main Brand & Iconic Green Search Area -->
+      <section class="naver-header-search no-print">
+        <div class="search-section-inner">
+          <!-- Naver Green Logo -->
+          <div class="naver-brand">
+            <div class="naver-logo-box">
+              <span class="naver-logo-n">N</span>
+              <span class="naver-logo-text">NAVER</span>
             </div>
-            <div class="class-stats-row">
-              <span class="stat-pill"><span class="stat-icon">👧👦</span> 학생 <strong><span id="stat-student-count">12</span>명</strong></span>
-              <span class="stat-separator">·</span>
-              <span class="stat-pill"><span class="stat-icon">📋</span> 역할 <strong><span id="stat-role-count">12</span>개</strong></span>
-              <span class="stat-separator">·</span>
-              <span class="stat-pill" id="stat-assignment-status"><span class="stat-icon">✨</span> 상태 <strong><span id="stat-status-text">배정 완료</span></strong></span>
+            <div class="naver-subbrand">
+              <span class="subbrand-badge">CLASS</span>
+              <span class="subbrand-title">1인 1역할</span>
             </div>
           </div>
 
-          <!-- Action Buttons -->
-          <div class="control-actions">
-            <button id="btn-assign" class="btn btn-primary btn-bounce" title="무작위로 학생들에게 역할을 1:1 배정합니다">
-              <span class="btn-icon">🎲</span> 역할 배정하기
+          <!-- Iconic Naver Green Search Window -->
+          <div class="naver-search-window">
+            <div class="search-input-wrap">
+              <input 
+                type="text" 
+                id="input-search" 
+                class="naver-search-input" 
+                placeholder="학생 이름(김하늘, 이도윤...) 또는 역할(칠판, 우유...)을 검색하세요" 
+                autocomplete="off"
+              />
+              <button class="search-clear-btn" id="btn-search-clear" title="검색어 지우기">✕</button>
+            </div>
+            <button class="naver-search-submit" id="btn-search-trigger" title="검색">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
             </button>
-            <button id="btn-print" class="btn btn-accent" title="교실 게시판 부착용 깔끔한 A4 배정표를 인쇄합니다">
-              <span class="btn-icon">🖨️</span> A4 게시판 인쇄
-            </button>
-            <button id="btn-copy-text" class="btn btn-subtle" title="알림장이나 메신저 공유용 텍스트를 복사합니다">
-              <span class="btn-icon">📋</span> 명단 복사
-            </button>
-            <button id="btn-reset" class="btn btn-ghost" title="배정 상태를 초기화합니다">
-              <span class="btn-icon">↺</span> 초기화
-            </button>
           </div>
-        </section>
 
-        <!-- Search & Filter Bar (Screen only) -->
-        <section class="filter-bar no-print">
-          <div class="search-box">
-            <span class="search-icon">🔍</span>
-            <input type="text" id="input-search" placeholder="학생 이름 또는 역할 검색..." />
+          <!-- Naver Realtime Keywords Bar -->
+          <div class="naver-realtime-keywords">
+            <span class="rt-label">실시간 역할 키워드</span>
+            <div class="rt-keyword-list" id="rt-keyword-list">
+              <span class="rt-item"><strong class="rt-num">1</strong> 칠판 요정 <span class="rt-up">▲</span></span>
+              <span class="rt-item"><strong class="rt-num">2</strong> 우유 도우미 <span class="rt-same">-</span></span>
+              <span class="rt-item"><strong class="rt-num">3</strong> 에너지 지킴이 <span class="rt-up">▲</span></span>
+              <span class="rt-item"><strong class="rt-num">4</strong> 바른 줄 반장 <span class="rt-same">-</span></span>
+              <span class="rt-item"><strong class="rt-num">5</strong> 식물 집사 <span class="rt-up">▲</span></span>
+            </div>
           </div>
-          <div class="filter-tags">
-            <span class="filter-label">보기 방식:</span>
-            <button class="view-btn active" data-view="grid" id="btn-view-grid">🎨 카드 그리드</button>
-            <button class="view-btn" data-view="table" id="btn-view-table">📑 명렬표 보기</button>
-          </div>
-        </section>
+        </div>
+      </section>
 
-        <!-- Role Cards Grid Container -->
-        <section id="role-cards-container" class="role-grid-section no-print">
-          <div id="cards-grid" class="cards-grid">
-            <!-- Dynamically populated cards via script.js -->
-          </div>
-        </section>
+      <!-- 3. Naver GNB (Global Navigation Bar) -->
+      <nav class="naver-gnb no-print">
+        <div class="gnb-inner">
+          <ul class="gnb-menu">
+            <li><button id="btn-assign" class="gnb-item gnb-primary" title="무작위로 학생들에게 역할을 배정합니다"><span class="gnb-icon">🎲</span> 역할 배정하기</button></li>
+            <li><button id="btn-sheet-load" class="gnb-item" title="구글 스프레드시트에서 불러오기"><span class="gnb-icon">🔄</span> 시트 불러오기</button></li>
+            <li><button id="btn-sheet-save" class="gnb-item" title="현재 배정 결과를 구글 시트에 저장"><span class="gnb-icon">💾</span> 시트에 결과 저장</button></li>
+            <li><button id="btn-print" class="gnb-item gnb-accent" title="교실 게시판용 깔끔한 A4 인쇄"><span class="gnb-icon">🖨️</span> A4 게시판 인쇄</button></li>
+            <li><button id="btn-copy-text" class="gnb-item" title="알림장 및 메신저용 텍스트 복사"><span class="gnb-icon">📋</span> 명단 복사</button></li>
+            <li><button id="btn-reset" class="gnb-item gnb-ghost" title="배정 초기화"><span class="gnb-icon">↺</span> 초기화</button></li>
+          </ul>
+        </div>
+      </nav>
 
-        <!-- Alternative Table View Container -->
-        <section id="role-table-container" class="role-table-section no-print hidden">
-          <div class="table-card">
-            <table class="roster-table">
-              <thead>
-                <tr>
-                  <th style="width: 60px;">번호</th>
-                  <th style="width: 220px;">역할명</th>
-                  <th>담당 업무 및 활동 내용</th>
-                  <th style="width: 140px;">배정된 학생</th>
-                  <th style="width: 100px;">조정</th>
-                </tr>
-              </thead>
-              <tbody id="table-body">
-                <!-- Dynamically populated rows via script.js -->
-              </tbody>
-            </table>
-          </div>
-        </section>
+      <!-- 4. Naver 2-Column Portal Main Body -->
+      <main class="naver-main-container">
+        <div class="naver-columns-wrap">
 
-        <!-- Printable A4 Bulletin Board Sheet (Used for print and preview) -->
+          <!-- LEFT COLUMN (Main Content: Role Stand / Cards) -->
+          <div class="naver-main-col">
+            
+            <!-- Classroom Header Card -->
+            <section class="naver-box class-title-box no-print">
+              <div class="class-title-left">
+                <div class="class-badge-row">
+                  <span class="naver-green-badge">학급 설정</span>
+                  <input type="text" id="input-period-name" class="naver-input-subtle" value="2026학년도 1학기 (4월)" placeholder="학기/기간 입력" />
+                </div>
+                <input type="text" id="input-class-name" class="naver-class-title-input" value="🌱 햇살초등학교 3학년 2반" placeholder="학교 및 학급명 입력" />
+              </div>
+              <div class="class-title-right">
+                <span class="status-indicator">
+                  <span class="status-dot"></span>
+                  <span id="stat-status-text">전원 배정 완료</span>
+                </span>
+              </div>
+            </section>
+
+            <!-- Naver Newsstand-style Role Stand Section -->
+            <section class="naver-box role-stand-box no-print">
+              <div class="stand-header">
+                <div class="stand-header-title">
+                  <span class="naver-square-dot"></span>
+                  <h2 class="stand-title">1인 1역할 배정판</h2>
+                  <span class="stand-count-tag">총 <strong id="stat-role-count">12</strong>개</span>
+                </div>
+                
+                <div class="stand-controls">
+                  <div class="stand-view-toggle">
+                    <button class="view-toggle-btn active" id="btn-view-grid" title="카드 그리드 보기">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h7v7H4V4zm0 9h7v7H4v-7zm9-9h7v7h-7V4zm0 9h7v7h-7v-7z"/></svg> 카드형
+                    </button>
+                    <button class="view-toggle-btn" id="btn-view-table" title="명렬표 리스트 보기">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h16v2H4v-2z"/></svg> 목록형
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Filter Notification Banner -->
+              <div class="stand-quick-guide">
+                <span>💡 <strong>[🎲 역할 배정하기]</strong>를 누르면 1:1 무작위 자동 매칭됩니다. 카드의 <strong>[조정]</strong> 버튼으로 담당 학생을 맞교환할 수 있습니다.</span>
+              </div>
+
+              <!-- Card Grid Container -->
+              <div id="role-cards-container" class="role-grid-section">
+                <div id="cards-grid" class="naver-cards-grid">
+                  <!-- Dynamically populated cards via script.js -->
+                </div>
+              </div>
+
+              <!-- Table View Container -->
+              <div id="role-table-container" class="role-table-section hidden">
+                <table class="naver-roster-table">
+                  <thead>
+                    <tr>
+                      <th style="width: 50px;">번호</th>
+                      <th style="width: 200px;">역할명</th>
+                      <th>담당 업무 및 실천 내용</th>
+                      <th style="width: 130px;">배정된 학생</th>
+                      <th style="width: 80px;">수동변경</th>
+                    </tr>
+                  </thead>
+                  <tbody id="table-body">
+                    <!-- Dynamically populated rows via script.js -->
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          </div>
+
+          <!-- RIGHT COLUMN (Sidebar: Naver Login Box, Stats Widget, Quick Tools) -->
+          <aside class="naver-side-col no-print">
+
+            <!-- 1. Naver Login Box Replica: Teacher Classroom Control Panel -->
+            <div class="naver-box naver-login-panel">
+              <div class="login-panel-header">
+                <span class="user-greeting">안녕하세요, <strong>선생님</strong></span>
+                <span class="naver-badge-sm">교탁 컨트롤</span>
+              </div>
+
+              <div class="login-class-summary">
+                <div class="summary-row">
+                  <span class="summary-label">담당 학급</span>
+                  <span class="summary-val" id="side-summary-class">햇살초 3-2</span>
+                </div>
+                <div class="summary-row">
+                  <span class="summary-label">학생 명수</span>
+                  <span class="summary-val"><strong id="stat-student-count">12</strong>명</span>
+                </div>
+              </div>
+
+              <!-- Big Naver Green Action Button -->
+              <button id="btn-side-assign" class="naver-login-btn" title="학생들에게 역할을 무작위 배정합니다">
+                <span class="btn-icon">🎲</span> 1인 1역할 무작위 배정
+              </button>
+
+              <div class="login-sub-links">
+                <button class="sub-link-btn" id="btn-side-reassign">재배정</button>
+                <span class="sub-link-sep">|</span>
+                <button class="sub-link-btn" id="btn-side-manage">명단 관리</button>
+                <span class="sub-link-sep">|</span>
+                <button class="sub-link-btn" id="btn-side-reset">배정 초기화</button>
+              </div>
+            </div>
+
+            <!-- 2. Naver Weather/Widget Replica: Class Assignment Progress Widget -->
+            <div class="naver-box naver-widget-box">
+              <div class="widget-header">
+                <span class="widget-title">오늘의 역할 실천 현황</span>
+                <span class="widget-date" id="widget-date-display">2026. 10. 17.</span>
+              </div>
+              <div class="widget-body">
+                <div class="progress-info-row">
+                  <span class="progress-label">역할 배정률</span>
+                  <span class="progress-percent" id="widget-progress-text">100%</span>
+                </div>
+                <div class="naver-progress-bar">
+                  <div class="progress-fill" id="widget-progress-fill" style="width: 100%;"></div>
+                </div>
+                <div class="widget-stats-grid">
+                  <div class="w-stat-item">
+                    <span class="w-stat-num" id="w-stat-assigned">12</span>
+                    <span class="w-stat-name">배정 완료</span>
+                  </div>
+                  <div class="w-stat-divider"></div>
+                  <div class="w-stat-item">
+                    <span class="w-stat-num" id="w-stat-unassigned">0</span>
+                    <span class="w-stat-name">미배정</span>
+                  </div>
+                  <div class="w-stat-divider"></div>
+                  <div class="w-stat-item">
+                    <span class="w-stat-num" id="w-stat-total">12</span>
+                    <span class="w-stat-name">전체 정원</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 3. Naver Quick Shortcut Banner: Google Sheets & Print -->
+            <div class="naver-box naver-shortcut-box">
+              <h3 class="shortcut-title">스마트 학급 업무 바로가기</h3>
+              <div class="shortcut-list">
+                <button id="btn-side-sheets-load" class="shortcut-item">
+                  <span class="shortcut-icon">🔄</span>
+                  <div class="shortcut-text">
+                    <strong>구글 시트 불러오기</strong>
+                    <span>스프레드시트 명단 즉시 동기화</span>
+                  </div>
+                  <span class="shortcut-arrow">›</span>
+                </button>
+                <button id="btn-side-sheets-save" class="shortcut-item">
+                  <span class="shortcut-icon">💾</span>
+                  <div class="shortcut-text">
+                    <strong>구글 시트에 저장</strong>
+                    <span>배정 결과 스프레드시트 기록</span>
+                  </div>
+                  <span class="shortcut-arrow">›</span>
+                </button>
+                <button id="btn-side-print" class="shortcut-item">
+                  <span class="shortcut-icon">🖨️</span>
+                  <div class="shortcut-text">
+                    <strong>교실 게시판 A4 인쇄</strong>
+                    <span>깔끔한 1페이지 출력 서식</span>
+                  </div>
+                  <span class="shortcut-arrow">›</span>
+                </button>
+                <button id="btn-side-copy" class="shortcut-item">
+                  <span class="shortcut-icon">📋</span>
+                  <div class="shortcut-text">
+                    <strong>텍스트 클립보드 복사</strong>
+                    <span>알림장 및 메신저 바로 붙여넣기</span>
+                  </div>
+                  <span class="shortcut-arrow">›</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Naver Ad-banner style Class Motto -->
+            <div class="naver-banner-motto">
+              <div class="motto-tag">학급 자치 약속</div>
+              <p class="motto-text">"작은 일도 성실하게, 서로를 배려하는 멋진 우리 반!"</p>
+            </div>
+
+          </aside>
+        </div>
+
+        <!-- 5. Printable A4 Bulletin Board Sheet (Clean High-Contrast Printout) -->
         <section id="print-area" class="print-sheet-area">
           <div class="a4-sheet">
             <header class="print-header">
               <div class="print-header-top">
-                <span class="print-emblem">🏫</span>
-                <span id="print-school-name" class="print-school">햇살초등학교 3학년 2반</span>
+                <span class="print-school" id="print-school-name">햇살초등학교 3학년 2반</span>
                 <span class="print-tag">우리 반 1인 1역할 배정표</span>
               </div>
               <h2 class="print-title">🌟 즐겁고 책임감 있는 우리들의 1인 1역할 🌟</h2>
@@ -149,9 +321,9 @@
                 <tr>
                   <th class="p-col-no">번호</th>
                   <th class="p-col-role">역할 이름</th>
-                  <th class="p-col-duty">맡은 일 (책임과 실천)</th>
+                  <th class="p-col-duty">맡은 일 (책임과 실천 내용)</th>
                   <th class="p-col-student">담당 학생</th>
-                  <th class="p-col-check">실천 점검 (월·화·수·목·금)</th>
+                  <th class="p-col-check">주간 실천 점검 (월·화·수·목·금)</th>
                 </tr>
               </thead>
               <tbody id="print-table-body">
@@ -161,10 +333,10 @@
 
             <footer class="print-footer">
               <div class="print-promise">
-                💡 <strong>우리들의 약속:</strong> 나의 역할은 우리 반 모두를 위한 소중한 선물입니다. 매일 성실하게 실천해요!
+                💡 <strong>우리들의 약속:</strong> 나의 역할은 우리 반 친구 모두를 위한 소중한 선물입니다. 매일 성실하게 실천해요!
               </div>
               <div class="print-date-stamp">
-                출력일: <span id="print-today-date">2026. 10. 17.</span>
+                출력일시: <span id="print-today-date">2026. 10. 17.</span>
               </div>
             </footer>
           </div>
@@ -172,50 +344,65 @@
 
       </main>
 
-      <!-- Footer Info -->
-      <footer class="app-footer no-print">
-        <p>우리 반 1인 1역할 배정 도우미 · 학생들의 자율성과 책임감을 키우는 학급 자치 프로그램</p>
+      <!-- Naver Style Footer -->
+      <footer class="naver-footer no-print">
+        <div class="footer-inner">
+          <div class="footer-links">
+            <a href="#">이용약관</a>
+            <span class="sep">|</span>
+            <a href="#"><strong>개인정보처리방침</strong></a>
+            <span class="sep">|</span>
+            <a href="#">책임의 한계와 법적고지</a>
+            <span class="sep">|</span>
+            <a href="#">학급도우미 고객센터</a>
+          </div>
+          <div class="footer-corp">
+            <span class="naver-corp-logo">NAVER</span>
+            <span class="corp-desc">우리 반 1인 1역할 배정 도우미 서비스 · 초등학교 학급 자치 및 학생 참여 지원</span>
+          </div>
+        </div>
       </footer>
     </div>
 
     <!-- Modal 1: Google Spreadsheet (Apps Script) Integration -->
     <div id="modal-sheets" class="modal-overlay hidden" role="dialog" aria-modal="true">
-      <div class="modal-box">
-        <div class="modal-header">
-          <h3 class="modal-title">📊 구글 스프레드시트 (Apps Script) 연동</h3>
-          <button class="modal-close" id="btn-close-sheets-modal" aria-label="닫기">✕</button>
+      <div class="naver-modal-box">
+        <div class="naver-modal-header">
+          <h3 class="naver-modal-title">
+            <span class="naver-icon-green">📊</span> 구글 스프레드시트 (Apps Script) 연동
+          </h3>
+          <button class="naver-modal-close" id="btn-close-sheets-modal" aria-label="닫기">✕</button>
         </div>
-        <div class="modal-body">
-          <p class="modal-desc">
+        <div class="naver-modal-body">
+          <p class="naver-modal-desc">
             구글 스프레드시트의 <strong>확장 프로그램 &gt; Apps Script</strong>를 웹 앱(Web App)으로 배포한 URL을 입력하면, 실시간으로 명단을 가져오거나 배정 결과를 원클릭으로 저장할 수 있습니다.
           </p>
 
-          <div class="form-group">
+          <div class="naver-form-group">
             <label for="input-apps-script-url"><strong>구글 Apps Script 웹 앱 URL:</strong></label>
             <input 
               type="url" 
               id="input-apps-script-url" 
-              class="form-input" 
+              class="naver-form-input" 
               placeholder="https://script.google.com/macros/s/.../exec"
             />
-            <span class="field-hint">배포 시 '액세스 권한: 모든 사용자(Anyone)'로 설정된 Web App URL을 입력하세요.</span>
+            <span class="naver-field-hint">배포 시 '액세스 권한: 모든 사용자(Anyone)'로 설정된 Web App URL을 입력하세요.</span>
           </div>
 
-          <div class="modal-section-box">
-            <h4>💡 손쉬운 Apps Script 연동 3단계 가이드</h4>
-            <ol class="guide-steps">
-              <li>구글 드라이브에서 새 스프레드시트를 만들고 <strong>A열에 학생 이름</strong>, <strong>B열에 역할명</strong>, <strong>C열에 역할 설명</strong>을 적습니다.</li>
-              <li>상단 메뉴 <strong>[확장 프로그램] &gt; [Apps Script]</strong>를 클릭하고 아래 제공된 예시 코드를 붙여넣습니다.</li>
-              <li>우측 상단 <strong>[배포] &gt; [새 배포] &gt; 유형: 웹 앱</strong> 선택 후 웹 앱 URL을 복사해 위에 넣으면 준비 완료!</li>
+          <div class="naver-guide-box">
+            <h4>💡 연동 3단계 가이드</h4>
+            <ol class="naver-guide-list">
+              <li>구글 드라이브에서 스프레드시트를 만들고 <strong>A열에 학생 이름</strong>, <strong>B열에 역할명</strong>, <strong>C열에 역할 설명</strong>을 입력합니다.</li>
+              <li>상단 메뉴 <strong>[확장 프로그램] &gt; [Apps Script]</strong>를 클릭하고 아래 템플릿 코드를 붙여넣습니다.</li>
+              <li>우측 상단 <strong>[배포] &gt; [새 배포] &gt; 유형: 웹 앱</strong> 선택 후 생성된 URL을 위에 붙여넣으면 완료!</li>
             </ol>
-            <div class="code-header">
-              <span>Apps Script 소스 코드 템플릿</span>
-              <button id="btn-copy-gas-code" class="btn btn-mini">코드 복사</button>
+            <div class="code-copy-row">
+              <span class="code-label">Apps Script 소스 코드 템플릿</span>
+              <button id="btn-copy-gas-code" class="naver-btn-small">코드 복사</button>
             </div>
-            <pre class="code-preview" id="gas-code-sample"><code>function doGet(e) {
+            <pre class="naver-code-box" id="gas-code-sample"><code>function doGet(e) {
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
   var data = sheet.getDataRange().getValues();
-  // 첫 번째 행이 헤더일 경우 제외
   var students = [];
   var roles = [];
   for (var i = 1; i &lt; data.length; i++) {
@@ -231,7 +418,6 @@
 function doPost(e) {
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
   var payload = JSON.parse(e.postData.contents);
-  // 기존 배정 결과 행 작성
   sheet.getRange(1, 5, 1, 3).setValues([['배정 학생', '역할명', '배정 일시']]);
   var rows = payload.assignments.map(function(item) {
     return [item.student, item.roleTitle, new Date()];
@@ -244,14 +430,14 @@ function doPost(e) {
 }</code></pre>
           </div>
         </div>
-        <div class="modal-footer">
-          <button id="btn-test-sheets-fetch" class="btn btn-outline">
+        <div class="naver-modal-footer">
+          <button id="btn-test-sheets-fetch" class="naver-btn-outline">
             🔄 시트에서 불러오기 실행
           </button>
-          <button id="btn-test-sheets-save" class="btn btn-primary">
-            💾 현재 배정 결과 시트로 전송
+          <button id="btn-test-sheets-save" class="naver-btn-green">
+            💾 현재 결과 시트로 전송
           </button>
-          <button id="btn-save-sheets-config" class="btn btn-secondary">
+          <button id="btn-save-sheets-config" class="naver-btn-subtle">
             설정 저장
           </button>
         </div>
@@ -260,24 +446,26 @@ function doPost(e) {
 
     <!-- Modal 2: Manage Students & Roles -->
     <div id="modal-manage" class="modal-overlay hidden" role="dialog" aria-modal="true">
-      <div class="modal-box modal-lg">
-        <div class="modal-header">
-          <h3 class="modal-title">⚙️ 학생 명단 및 역할 목록 관리</h3>
-          <button class="modal-close" id="btn-close-manage-modal" aria-label="닫기">✕</button>
+      <div class="naver-modal-box modal-lg">
+        <div class="naver-modal-header">
+          <h3 class="naver-modal-title">
+            <span class="naver-icon-green">⚙️</span> 학생 명단 및 역할 목록 관리
+          </h3>
+          <button class="naver-modal-close" id="btn-close-manage-modal" aria-label="닫기">✕</button>
         </div>
-        <div class="modal-body">
+        <div class="naver-modal-body">
           <div class="manage-grid">
             <!-- Left: Students -->
             <div class="manage-col">
               <div class="manage-col-header">
                 <h4>👧👦 학생 명단 (<span id="manage-student-count">12</span>명)</h4>
-                <button id="btn-clear-students" class="btn btn-mini btn-danger-text">비우기</button>
+                <button id="btn-clear-students" class="naver-btn-small naver-btn-danger">명단 비우기</button>
               </div>
-              <p class="field-hint">쉼표 또는 줄바꿈으로 학생 이름을 입력하세요.</p>
-              <textarea id="textarea-students" class="form-textarea" rows="12" placeholder="김하늘&#10;이도윤&#10;박서아..."></textarea>
+              <span class="naver-field-hint">쉼표(,) 또는 줄바꿈으로 학생 이름을 입력하세요.</span>
+              <textarea id="textarea-students" class="naver-form-textarea" rows="12" placeholder="김하늘&#10;이도윤&#10;박서아..."></textarea>
               <div class="quick-add-row">
-                <input type="text" id="input-new-student" class="form-input" placeholder="새 학생 이름 입력" />
-                <button id="btn-add-student" class="btn btn-secondary">추가</button>
+                <input type="text" id="input-new-student" class="naver-form-input" placeholder="새 학생 이름 입력" />
+                <button id="btn-add-student" class="naver-btn-green" style="flex-shrink: 0;">추가</button>
               </div>
             </div>
 
@@ -285,28 +473,28 @@ function doPost(e) {
             <div class="manage-col">
               <div class="manage-col-header">
                 <h4>📋 학급 역할 목록 (<span id="manage-role-count">12</span>개)</h4>
-                <button id="btn-reset-default-roles" class="btn btn-mini">기본 12개 복원</button>
+                <button id="btn-reset-default-roles" class="naver-btn-small">기본 12개 복원</button>
               </div>
-              <p class="field-hint">형식: 이모지 / 역할명 / 맡은 일 (줄바꿈 구분)</p>
+              <span class="naver-field-hint">역할 이름과 구체적인 실천 일 내용을 수정할 수 있습니다.</span>
               <div id="roles-editor-list" class="roles-editor-list">
                 <!-- Populated dynamically via script.js -->
               </div>
               <div class="add-role-box">
                 <h5>새 역할 추가하기</h5>
                 <div class="role-inputs-grid">
-                  <input type="text" id="input-new-role-emoji" class="form-input form-emoji" value="🌟" maxlength="2" title="이모지" />
-                  <input type="text" id="input-new-role-title" class="form-input" placeholder="역할 이름 (예: 우유 도우미)" />
+                  <input type="text" id="input-new-role-emoji" class="naver-form-input form-emoji" value="🌟" maxlength="2" title="이모지" />
+                  <input type="text" id="input-new-role-title" class="naver-form-input" placeholder="역할 이름 (예: 우유 도우미)" />
                 </div>
-                <input type="text" id="input-new-role-duty" class="form-input" placeholder="구체적인 실천 일 (예: 아침 우유 상자 챙기기)" style="margin-top: 6px;" />
-                <button id="btn-add-role" class="btn btn-secondary" style="margin-top: 8px; width: 100%;">
+                <input type="text" id="input-new-role-duty" class="naver-form-input" placeholder="구체적인 실천 일 (예: 아침 우유 상자 챙기기)" style="margin-top: 6px;" />
+                <button id="btn-add-role" class="naver-btn-green" style="margin-top: 8px; width: 100%;">
                   + 새 역할 등록
                 </button>
               </div>
             </div>
           </div>
         </div>
-        <div class="modal-footer">
-          <button id="btn-save-manage" class="btn btn-primary">
+        <div class="naver-modal-footer">
+          <button id="btn-save-manage" class="naver-btn-green">
             ✓ 변경 사항 저장 & 적용
           </button>
         </div>
@@ -315,25 +503,27 @@ function doPost(e) {
 
     <!-- Modal 3: Manual Student Reassign / Swap -->
     <div id="modal-swap" class="modal-overlay hidden" role="dialog" aria-modal="true">
-      <div class="modal-box modal-sm">
-        <div class="modal-header">
-          <h3 class="modal-title">🔄 역할 담당 학생 변경</h3>
-          <button class="modal-close" id="btn-close-swap-modal" aria-label="닫기">✕</button>
+      <div class="naver-modal-box modal-sm">
+        <div class="naver-modal-header">
+          <h3 class="naver-modal-title">
+            <span class="naver-icon-green">🔄</span> 역할 담당 학생 변경
+          </h3>
+          <button class="naver-modal-close" id="btn-close-swap-modal" aria-label="닫기">✕</button>
         </div>
-        <div class="modal-body">
+        <div class="naver-modal-body">
           <p id="swap-role-info" class="swap-role-info">
             <!-- Filled via JS -->
           </p>
-          <div class="form-group">
+          <div class="naver-form-group">
             <label for="select-student-target"><strong>담당할 학생 선택:</strong></label>
-            <select id="select-student-target" class="form-select">
+            <select id="select-student-target" class="naver-form-select">
               <!-- Filled via JS -->
             </select>
-            <span class="field-hint">이미 다른 역할을 맡고 있는 학생을 선택하면 두 학생의 역할이 맞교환(Swap)됩니다.</span>
+            <span class="naver-field-hint">이미 다른 역할을 맡고 있는 학생을 선택하면 두 학생의 역할이 자동으로 맞교환(Swap)됩니다.</span>
           </div>
         </div>
-        <div class="modal-footer">
-          <button id="btn-confirm-swap" class="btn btn-primary">변경 완료</button>
+        <div class="naver-modal-footer">
+          <button id="btn-confirm-swap" class="naver-btn-green">변경 완료</button>
         </div>
       </div>
     </div>
