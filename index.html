@@ -406,8 +406,15 @@
   var students = [];
   var roles = [];
   for (var i = 1; i &lt; data.length; i++) {
-    if (data[i][0]) students.push(data[i][0]);
-    if (data[i][1]) roles.push({ name: data[i][1], duty: data[i][2] || '' });
+    var studentName = String(data[i][0] || '').trim();
+    if (studentName) students.push(studentName);
+    var roleTitle = String(data[i][1] || '').trim();
+    if (roleTitle) {
+      roles.push({
+        title: roleTitle,
+        duty: String(data[i][2] || '').trim()
+      });
+    }
   }
   return ContentService.createTextOutput(JSON.stringify({
     students: students,

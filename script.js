@@ -48,14 +48,210 @@ let appState = {
 // 3. 로컬 스토리지 저장 및 복원
 // ========================================================
 
+// ========================================================
+// 2.5 데이터 정규화 및 파서 (안전한 이름/역할 추출)
+// ========================================================
+
+/**
+ * 어떤 형태(문자열, 객체 {name, student, 이름...}, 2D 배열, 숫자 등)로 들어오든
+ * 학생의 순수 이름 문자열만을 안전하게 추출합니다. [object Object] 완전 방지.
+ */
+function normalizeStudentName(item) {
+  if (item === null || item === undefined) return "";
+  
+  if (typeof item === "string") {
+    const trimmed = item.trim();
+    if (!trimmed || trimmed.toLowerCase() === "[object object]") return "";
+    return trimmed;
+  }
+  
+  if (typeof item === "number") return String(item);
+  
+  if (Array.isArray(item)) {
+    for (const sub of item) {
+      const extracted = normalizeStudentName(sub);
+      if (extracted && isNaN(Number(extracted))) return extracted;
+    }
+    return item[0] ? normalizeStudentName(item[0]) : "";
+  }
+  
+  if (typeof item === "object") {
+    // 구글 스프레드시트 및 일반적인 Apps Script JSON 키워드 목록
+    const candidateKeys = [
+      "name", "student", "studentName", "student_name", "userName", "nameStr",
+      "이름", "학생", "학생명", "학생이름", "성명", "명단", "아동", "아동명", "아이",
+      "0", "val", "value", "text"
+    ];
+    for (const key of candidateKeys) {
+      if (item[key] !== undefined && item[key] !== null) {
+        const val = normalizeStudentName(item[key]);
+        if (val) return val;
+      }
+    }
+    // 객체 내 첫 번째 유효한 문자열 필드 탐색
+    for (const val of Object.values(item)) {
+      if (typeof val === "string" && val.trim().length > 0) {
+        const res = normalizeStudentName(val);
+        if (res) return res;
+      }
+    }
+  }
+  
+  const s = String(item).trim();
+  return s.toLowerCase() === "[object object]" ? "" : s;
+}
+
+function isHeaderLabel(str) {
+  if (!str) return true;
+  const s = String(str).trim().toLowerCase();
+  const headers = [
+    "이름", "학생", "학생명", "학생이름", "성명", "name", "student", "student name", 
+    "역할", "역할명", "role", "duty", "설명", "번호", "no", "id", "timestamp", "일시"
+  ];
+  return headers.includes(s);
+}
+
+function extractRole(item, index) {
+  if (!item) return null;
+  if (typeof item === "string") {
+    const trimmed = item.trim();
+    if (!trimmed || isHeaderLabel(trimmed)) return null;
+    return {
+      id: index + 1,
+      emoji: "🌟",
+      title: trimmed,
+      duty: ""
+    };
+  }
+  if (Array.isArray(item)) {
+    const title = String(item[0] || `역할 ${index + 1}`).trim();
+    if (isHeaderLabel(title)) return null;
+    return {
+      id: index + 1,
+      emoji: item[2] || "🌟",
+      title: title,
+      duty: String(item[1] || "").trim()
+    };
+  }
+  if (typeof item === "object") {
+    const title = item.title || item.name || item.role || item.roleName || item.역할 || item.역할명 || item.역할이름 || item["1"] || `역할 ${index + 1}`;
+    const titleStr = String(title).trim();
+    if (isHeaderLabel(titleStr)) return null;
+    const duty = item.duty || item.desc || item.description || item.활동 || item.업무 || item.실천 || item.맡은일 || item["2"] || "";
+    const emoji = item.emoji || item.icon || item.이모지 || "🌟";
+    return {
+      id: item.id || index + 1,
+      emoji: String(emoji).trim() || "🌟",
+      title: titleStr,
+      duty: String(duty).trim()
+    };
+  }
+  return null;
+}
+
+function parseSheetResponse(data) {
+  let extractedStudents = [];
+  let extractedRoles = [];
+
+  if (Array.isArray(data)) {
+    data.forEach((row) => {
+      if (Array.isArray(row)) {
+        const studentName = normalizeStudentName(row[0]);
+        if (studentName && !isHeaderLabel(studentName)) {
+          extractedStudents.push(studentName);
+        }
+        if (row[1]) {
+          const roleTitle = String(row[1]).trim();
+          if (roleTitle && !isHeaderLabel(roleTitle)) {
+            extractedRoles.push({
+              id: extractedRoles.length + 1,
+              emoji: row[3] || "🌟",
+              title: roleTitle,
+              duty: String(row[2] || "").trim()
+            });
+          }
+        }
+      } else if (typeof row === "object" && row !== null) {
+        const sName = normalizeStudentName(row);
+        if (sName && !isHeaderLabel(sName)) {
+          extractedStudents.push(sName);
+        }
+        const rObj = extractRole(row, extractedRoles.length);
+        if (rObj && rObj.title && !isHeaderLabel(rObj.title)) {
+          extractedRoles.push(rObj);
+        }
+      } else if (typeof row === "string") {
+        const sName = normalizeStudentName(row);
+        if (sName && !isHeaderLabel(sName)) {
+          extractedStudents.push(sName);
+        }
+      }
+    });
+  } else if (typeof data === "object" && data !== null) {
+    const studentListCandidate = data.students || data.studentList || data.roster || data.names || data.학생명단 || data.학생들;
+    const roleListCandidate = data.roles || data.roleList || data.tasks || data.역할목록 || data.역할들;
+
+    if (Array.isArray(studentListCandidate)) {
+      studentListCandidate.forEach(item => {
+        const name = normalizeStudentName(item);
+        if (name && !isHeaderLabel(name)) {
+          extractedStudents.push(name);
+        }
+      });
+    }
+
+    if (Array.isArray(roleListCandidate)) {
+      roleListCandidate.forEach((item, idx) => {
+        const role = extractRole(item, idx);
+        if (role && role.title && !isHeaderLabel(role.title)) {
+          extractedRoles.push(role);
+        }
+      });
+    }
+
+    if (extractedStudents.length === 0) {
+      const genericRows = data.data || data.rows || data.items || data.result || data.values;
+      if (Array.isArray(genericRows)) {
+        return parseSheetResponse(genericRows);
+      }
+    }
+  }
+
+  // 중복 학생 제거 및 순서 보존
+  extractedStudents = [...new Set(extractedStudents)];
+
+  return { students: extractedStudents, roles: extractedRoles };
+}
+
+// ========================================================
+// 3. 로컬 스토리지 저장 및 복원 (오염 데이터 자동 정제)
+// ========================================================
+
 function loadStateFromStorage() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (parsed.students && parsed.students.length > 0) appState.students = parsed.students;
-      if (parsed.roles && parsed.roles.length > 0) appState.roles = parsed.roles;
-      if (parsed.assignments) appState.assignments = parsed.assignments;
+      if (parsed.students && Array.isArray(parsed.students)) {
+        const cleaned = parsed.students
+          .map(normalizeStudentName)
+          .filter(s => s.length > 0 && s.toLowerCase() !== "[object object]");
+        if (cleaned.length > 0) {
+          appState.students = cleaned;
+        } else {
+          appState.students = [...DEFAULT_STUDENTS];
+        }
+      }
+      if (parsed.roles && Array.isArray(parsed.roles) && parsed.roles.length > 0) {
+        const cleanedRoles = parsed.roles.map((r, i) => extractRole(r, i)).filter(Boolean);
+        if (cleanedRoles.length > 0) appState.roles = cleanedRoles;
+      }
+      if (parsed.assignments && Array.isArray(parsed.assignments)) {
+        appState.assignments = parsed.assignments.map(a => ({
+          roleId: a.roleId,
+          student: normalizeStudentName(a.student) || "미배정"
+        }));
+      }
       if (parsed.className) appState.className = parsed.className;
       if (parsed.periodName) appState.periodName = parsed.periodName;
       if (parsed.appsScriptUrl) appState.appsScriptUrl = parsed.appsScriptUrl;
@@ -73,9 +269,12 @@ function saveStateToStorage() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({
       className: appState.className,
       periodName: appState.periodName,
-      students: appState.students,
+      students: appState.students.map(normalizeStudentName).filter(Boolean),
       roles: appState.roles,
-      assignments: appState.assignments,
+      assignments: appState.assignments.map(a => ({
+        roleId: a.roleId,
+        student: normalizeStudentName(a.student) || "미배정"
+      })),
       appsScriptUrl: appState.appsScriptUrl
     }));
   } catch (e) {
@@ -88,7 +287,7 @@ function autoAssignInitial() {
   const shuffled = [...appState.students];
   appState.assignments = appState.roles.map((role, idx) => ({
     roleId: role.id,
-    student: shuffled[idx] || "미배정"
+    student: shuffled[idx] ? normalizeStudentName(shuffled[idx]) : "미배정"
   }));
 }
 
@@ -205,7 +404,8 @@ function renderCardsGrid() {
   const filteredRoles = appState.roles.filter(role => {
     if (!query) return true;
     const assignment = appState.assignments.find(a => a.roleId === role.id);
-    const studentName = assignment ? assignment.student.toLowerCase() : "";
+    const rawStudent = assignment ? assignment.student : "";
+    const studentName = normalizeStudentName(rawStudent).toLowerCase();
     return role.title.toLowerCase().includes(query) ||
            role.duty.toLowerCase().includes(query) ||
            studentName.includes(query);
@@ -225,8 +425,9 @@ function renderCardsGrid() {
   let html = "";
   filteredRoles.forEach((role, idx) => {
     const assignment = appState.assignments.find(a => a.roleId === role.id);
-    const studentName = assignment && assignment.student ? assignment.student : "미배정";
-    const initialChar = studentName !== "미배정" ? studentName.charAt(0) : "N";
+    const rawStudent = assignment ? assignment.student : "미배정";
+    const studentName = normalizeStudentName(rawStudent) || "미배정";
+    const initialChar = studentName !== "미배정" ? studentName.charAt(0) : "반";
     const isUnassigned = studentName === "미배정";
 
     html += `
@@ -267,7 +468,8 @@ function renderTableView() {
   const filteredRoles = appState.roles.filter(role => {
     if (!query) return true;
     const assignment = appState.assignments.find(a => a.roleId === role.id);
-    const studentName = assignment ? assignment.student.toLowerCase() : "";
+    const rawStudent = assignment ? assignment.student : "";
+    const studentName = normalizeStudentName(rawStudent).toLowerCase();
     return role.title.toLowerCase().includes(query) ||
            role.duty.toLowerCase().includes(query) ||
            studentName.includes(query);
@@ -276,7 +478,8 @@ function renderTableView() {
   let html = "";
   filteredRoles.forEach((role, idx) => {
     const assignment = appState.assignments.find(a => a.roleId === role.id);
-    const studentName = assignment && assignment.student ? assignment.student : "미배정";
+    const rawStudent = assignment ? assignment.student : "미배정";
+    const studentName = normalizeStudentName(rawStudent) || "미배정";
     const isUnassigned = studentName === "미배정";
 
     html += `
@@ -323,7 +526,8 @@ function renderPrintSheet() {
   let html = "";
   appState.roles.forEach((role, idx) => {
     const assignment = appState.assignments.find(a => a.roleId === role.id);
-    const studentName = assignment && assignment.student ? assignment.student : "미배정";
+    const rawStudent = assignment ? assignment.student : "미배정";
+    const studentName = normalizeStudentName(rawStudent) || "미배정";
 
     html += `
       <tr>
@@ -480,7 +684,7 @@ function initSheetsModal() {
 async function executeSheetsFetch() {
   if (!appState.appsScriptUrl) return;
 
-  showToast("네이버 시트 통신: 구글 스프레드시트에서 데이터를 불러옵니다...", "info");
+  showToast("구글 스프레드시트에서 데이터를 불러오는 중...", "info");
   try {
     const response = await fetch(appState.appsScriptUrl, {
       method: "GET",
@@ -489,26 +693,36 @@ async function executeSheetsFetch() {
     
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
-    const data = await response.json();
-    if (data.students && Array.isArray(data.students) && data.students.length > 0) {
-      appState.students = data.students;
+    const rawData = await response.json();
+    console.log("Sheet raw response received:", rawData);
+
+    const { students, roles } = parseSheetResponse(rawData);
+
+    if (students.length > 0) {
+      appState.students = students;
+    } else {
+      showToast("시트에서 학생 이름을 찾을 수 없습니다. 스프레드시트의 A열(이름)을 확인해 주세요.", "warning");
+      return;
     }
-    if (data.roles && Array.isArray(data.roles) && data.roles.length > 0) {
-      appState.roles = data.roles.map((r, i) => ({
-        id: i + 1,
-        emoji: r.emoji || "🌟",
-        title: r.name || r.title || `역할 ${i + 1}`,
-        duty: r.duty || ""
-      }));
+
+    if (roles.length > 0) {
+      appState.roles = roles;
     }
+
+    // 불러온 학생 이름으로 배정 갱신 (모든 학생 이름을 깨끗한 문자열로 보장)
+    const studentPool = [...appState.students];
+    appState.assignments = appState.roles.map((role, idx) => ({
+      roleId: role.id,
+      student: studentPool[idx % studentPool.length] || "미배정"
+    }));
 
     saveStateToStorage();
     renderApp();
-    showToast(`시트에서 학생 ${appState.students.length}명, 역할 ${appState.roles.length}개를 동기화했습니다!`, "success");
+    showToast(`시트에서 학생 ${appState.students.length}명의 이름을 올바르게 불러왔습니다! 🎉`, "success");
     closeModal("modal-sheets");
   } catch (err) {
     console.error("Sheets fetch error:", err);
-    showToast("시트 불러오기 실패: Apps Script 배포 URL 및 권한(Anyone)을 확인해 주세요.", "warning");
+    showToast("시트 불러오기 실패: Apps Script 배포 URL 및 권한(모든 사용자: Anyone)을 확인해 주세요.", "warning");
   }
 }
 
@@ -524,10 +738,11 @@ async function executeSheetsSave() {
       timestamp: new Date().toISOString(),
       assignments: appState.roles.map(role => {
         const a = appState.assignments.find(x => x.roleId === role.id);
+        const sName = a ? normalizeStudentName(a.student) : "미배정";
         return {
           roleId: role.id,
           roleTitle: role.title,
-          student: a ? a.student : "미배정",
+          student: sName || "미배정",
           duty: role.duty
         };
       })
@@ -564,7 +779,10 @@ function initManageModal() {
 
   function refreshManageModal() {
     if (textareaStudents) {
-      textareaStudents.value = appState.students.join("\n");
+      textareaStudents.value = appState.students
+        .map(normalizeStudentName)
+        .filter(s => s && s.toLowerCase() !== "[object object]")
+        .join("\n");
     }
     const studentCountEl = document.getElementById("manage-student-count");
     if (studentCountEl) studentCountEl.textContent = appState.students.length;
@@ -751,7 +969,7 @@ function openSwapModalForRole(roleId) {
   currentSwappingRoleId = roleId;
   const role = appState.roles.find(r => r.id === roleId);
   const assignment = appState.assignments.find(a => a.roleId === roleId);
-  const currentStudent = assignment ? assignment.student : "미배정";
+  const currentStudent = assignment ? (normalizeStudentName(assignment.student) || "미배정") : "미배정";
 
   const infoEl = document.getElementById("swap-role-info");
   if (infoEl && role) {
@@ -769,8 +987,10 @@ function openSwapModalForRole(roleId) {
   const select = document.getElementById("select-student-target");
   if (select) {
     let optionsHtml = `<option value="미배정">미배정 (비워두기)</option>`;
-    appState.students.forEach(student => {
-      const assignedRole = appState.assignments.find(a => a.student === student && a.roleId !== roleId);
+    appState.students.forEach(rawStudent => {
+      const student = normalizeStudentName(rawStudent);
+      if (!student) return;
+      const assignedRole = appState.assignments.find(a => normalizeStudentName(a.student) === student && a.roleId !== roleId);
       const suffix = assignedRole ? ` (현재: 역할 #${assignedRole.roleId})` : "";
       const isSelected = student === currentStudent ? "selected" : "";
       optionsHtml += `<option value="${escapeHtml(student)}" ${isSelected}>${escapeHtml(student)}${suffix}</option>`;
@@ -959,8 +1179,13 @@ function showToast(message, type = "info") {
 }
 
 function escapeHtml(str) {
-  if (!str) return "";
-  return String(str)
+  if (str === null || str === undefined) return "";
+  if (typeof str === "object") {
+    str = normalizeStudentName(str);
+  }
+  const s = String(str);
+  if (s.toLowerCase() === "[object object]") return "";
+  return s
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
